@@ -3,12 +3,17 @@ import {selectMainLayout} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
 import LoadingLayout from '../LoadingLayout';
 import LoginLayout from '../LoginLayout';
+import MainLayout from '../MainLayout';
 import css from './App.styl';
 
 
 const renderContent = (rootNode, layout, content) => {
     if (content) {
         content.destroy();
+    }
+
+    if (layout === 'main') {
+        return MainLayout(rootNode);
     }
 
     if (layout === 'login') {

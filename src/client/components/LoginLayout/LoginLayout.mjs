@@ -1,8 +1,8 @@
-import {subscribeSelector} from 'client/store';
+import {subscribeSelector, select} from 'client/store';
 import {selectPhoneNumber, selectAuthorizationState} from 'selectors';
 import {createDiv, createText, destroyCallbacks} from 'ui';
-// import WaitPhone from './WaitPhone';
-// import WaitCode from './WaitCode';
+import WaitPhone from './WaitPhone';
+import WaitCode from './WaitCode';
 import css from './LoginLayout.styl';
 
 const logoSvg = `<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" id="svg15" viewBox="0 0 240 240" version="1.1">
@@ -30,7 +30,7 @@ const renderHeader = () => {
 
 const setHeaderText = headerText => (authorizationState) => {
     if (authorizationState === 'authorizationStateWaitCode') {
-        headerText.textContent = 'Phone number';
+        headerText.textContent = select(selectPhoneNumber);
     } else if (authorizationState === 'authorizationStateWaitPhoneNumber') {
         headerText.textContent = 'Sign in to Telegram';
     } else {
@@ -48,19 +48,16 @@ const setHelpText = helpText => (authorizationState) => {
     }
 };
 
-
 const renderControl = (controlNode, authorizationState, control) => {
     if (control) {
-        // control.destroy();
+        control.destroy();
     }
 
     if (authorizationState === 'authorizationStateWaitCode') {
-        return controlNode.innerHTML = 'code';
-        // return WaitCode(controlNode);
+        return WaitCode(controlNode);
     }
 
-    return controlNode.innerHTML = 'phone';
-    // return WaitPhone(controlNode);
+    return WaitPhone(controlNode);
 };
 
 const LoginLayout = (parentNode) => {
