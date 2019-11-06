@@ -1,0 +1,41 @@
+@import '../common.styl'
+
+.root
+    position: absolute
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+    display: flex
+    justify-content: center
+    align-items: center
+    overflow: auto
+
+.layout
+    padding: 10px
+    box-sizing: border-box
+    width: 100%
+    max-width: 300px
+
+.logo
+    width: 120px
+    margin: 0 auto
+
+.header
+    padding: 30px 0
+    text-align: center
+    .title
+        font-size: 25px
+        font-weight: 500
+    .helpText
+        font-size: 12px
+        color: $grayTextColor
+        margin: 0 auto
+        max-width: 200px
+        padding-top: 10px
+
+.button
+    margin-top: 30px
+    visibility: hidden
+    &.visible
+        visibility: visible
