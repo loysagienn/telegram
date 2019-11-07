@@ -43,6 +43,11 @@ const initConnection = async (connection) => {
     store.on('updateAction', action => connection.send(action));
 
     connection.on('message', message => handleMessage(store, message));
+
+    store.airgram.api.getChats({
+        offsetOrder: '9223372036854775807',
+        limit: 3,
+    });
 };
 
 export default initConnection;

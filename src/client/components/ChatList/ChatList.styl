@@ -7,9 +7,13 @@
     bottom: 0
     box-sizing: border-box
     width: 400px
+    max-width: 100%
     background-color: $white
     border-right: 1px solid $grayBorderColor
     overflow: auto
+
+.chatsWrapper
+    padding: 7px 0
 
 .chatWrapper
     padding: 1px 8px
@@ -53,6 +57,10 @@
 .status
     font-size: 14px
     color: $grayTextColor
+    &.online
+        color: $blueTextColor
+    .statusPrefix
+        color: $black
 
 .meta
     position: absolute

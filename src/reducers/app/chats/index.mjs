@@ -23,3 +23,13 @@ export const chatList = (state = [], {type, update}) => {
 
     return state;
 };
+
+export const lastMessages = (state = {}, {type, update}) => {
+    if (type === UPDATE && update._ === 'updateChatLastMessage') {
+        const {chatId, lastMessage} = update;
+
+        return Object.assign({}, state, {[chatId]: lastMessage});
+    }
+
+    return state;
+};

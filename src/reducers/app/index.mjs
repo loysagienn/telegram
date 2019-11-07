@@ -6,10 +6,13 @@ import options from './options';
 import phoneNumber from './phoneNumber';
 import users from './users';
 import supergroups from './supergroups';
-import {chats, chatList} from './chats';
+import {chats, chatList, lastMessages} from './chats';
 import messages from './messages';
 import chatReadStatus from './chatReadStatus';
 import supergroupFullInfo from './supergroupFullInfo';
+import chatActions from './chatActions';
+import userStatuses from './userStatuses';
+import files from './files';
 
 export default combineReducers({
     authorizationState,
@@ -22,6 +25,10 @@ export default combineReducers({
     chatList,
     supergroups,
     messages,
+    lastMessages,
     chatReadStatus,
     supergroupFullInfo,
+    chatActions,
+    userStatuses,
+    files,
 });

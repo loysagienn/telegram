@@ -25,9 +25,9 @@ export const subscribeSelector = (selector, callback) => {
             return;
         }
 
-        callback(value);
-
         currentValue = value;
+
+        callback(value);
     });
 };
 

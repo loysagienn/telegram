@@ -1,4 +1,4 @@
-import {subscribeSelector, select} from 'client/store';
+import {subscribeSelector} from 'client/store';
 import {selectChatList} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
 import css from './ChatList.styl';
@@ -21,13 +21,14 @@ const renderList = (chatList, itemsList, rootNode) => {
 };
 
 const ChatList = () => {
-    const rootNode = createDiv(css.root);
+    const chatsWrapper = createDiv(css.chatsWrapper);
+    const rootNode = createDiv(css.root, chatsWrapper);
     const [destroy, callbacks] = destroyCallbacks(rootNode);
     let itemsList = [];
 
     callbacks.push(destroyChatItems);
     callbacks.push(subscribeSelector(selectChatList, (chatList) => {
-        itemsList = renderList(chatList, itemsList, rootNode);
+        itemsList = renderList(chatList, itemsList, chatsWrapper);
     }));
 
     return {

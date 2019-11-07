@@ -12,6 +12,7 @@ export const createElement = tag => (className, ...children) => {
 };
 
 export const createDiv = createElement('div');
+export const createSpan = createElement('span');
 export const createInput = createElement('input');
 
 export const createText = (text = '') => document.createTextNode(text);
