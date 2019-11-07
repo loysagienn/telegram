@@ -25,7 +25,7 @@ const renderContent = (rootNode, layout, content) => {
 
 const App = () => {
     const rootNode = createDiv(css.app);
-    const [callbacks, destroy] = destroyCallbacks();
+    const [destroy, callbacks] = destroyCallbacks();
     let content = null;
 
     callbacks.push(subscribeSelector(selectMainLayout, (layout) => {

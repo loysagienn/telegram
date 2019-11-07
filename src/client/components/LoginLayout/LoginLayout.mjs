@@ -67,7 +67,7 @@ const LoginLayout = (parentNode) => {
     const controlNode = createDiv();
     const layoutNode = createDiv(css.layout, logoNode, headerNode, controlNode);
     const rootNode = createDiv(css.root, layoutNode);
-    const [callbacks, destroy] = destroyCallbacks(rootNode);
+    const [destroy, callbacks] = destroyCallbacks(rootNode);
 
     callbacks.push(subscribeSelector(selectAuthorizationState, setHeaderText(headerText)));
     callbacks.push(subscribeSelector(selectAuthorizationState, setHelpText(helpText)));

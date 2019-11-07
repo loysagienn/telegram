@@ -15,7 +15,7 @@ const Input = ({currentValue = '', placeholder = ''} = {}) => {
     const inputNode = renderInput(placeholder);
     const setNodeValue = valueSetter(inputNode);
 
-    const [callbacks, destroy] = destroyCallbacks(inputNode);
+    const [destroy, callbacks] = destroyCallbacks(inputNode);
     const changeEmitter = createEmitter();
     callbacks.push(changeEmitter.off);
 

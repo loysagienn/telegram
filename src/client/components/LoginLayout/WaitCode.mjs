@@ -36,7 +36,7 @@ const WaitCode = (controlNode) => {
     const input = renderInput();
     const button = renderButton(input);
     const rootNode = createDiv(null, input.node, button.node);
-    const [callbacks, destroy] = destroyCallbacks(rootNode);
+    const [destroy, callbacks] = destroyCallbacks(rootNode);
     callbacks.push(() => input.destroy());
     callbacks.push(() => button.destroy());
     onInputChange(callbacks, input, button);

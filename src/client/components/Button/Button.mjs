@@ -4,7 +4,7 @@ import css from './Button.styl';
 
 const Button = ({text, onClick, className}) => {
     const rootNode = createDiv(css.root, createText(text));
-    const [callbacks, destroy] = destroyCallbacks(rootNode);
+    const [destroy, callbacks] = destroyCallbacks(rootNode);
 
     if (className) {
         rootNode.classList.add(className);

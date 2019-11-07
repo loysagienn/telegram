@@ -8,7 +8,7 @@ const loadingSvg = `<svg version="1.1" id="loader-1" xmlns="http://www.w3.org/20
 const LoadingLayout = (parentNode) => {
     const loadingNode = createDiv(css.loading);
     const rootNode = createDiv(css.root, loadingNode);
-    const [, destroy] = destroyCallbacks(rootNode);
+    const [destroy] = destroyCallbacks(rootNode);
 
     loadingNode.innerHTML = loadingSvg;
 
