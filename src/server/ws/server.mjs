@@ -38,6 +38,8 @@ class Connection extends EventEmitter {
             return;
         }
 
+        console.log('message', message);
+
         this.emit('message', message);
     }
 

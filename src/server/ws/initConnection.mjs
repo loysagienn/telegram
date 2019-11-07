@@ -1,6 +1,8 @@
 import {promises as fs} from 'fs';
 import {initState} from 'actions';
 import UserStore from './userStore';
+import handleMessage from './handleMessage';
+import activeConnections from './activeConnections';
 
 
 const activeStates = {};
@@ -34,9 +36,13 @@ const initConnection = async (connection) => {
 
     const store = await getUserStore(userHash);
 
+    activeConnections[userHash] = {connection, store};
+
     connection.send(initState(store.reduxStore.getState()));
 
     store.on('updateAction', action => connection.send(action));
+
+    connection.on('message', message => handleMessage(store, message));
 };
 
 export default initConnection;

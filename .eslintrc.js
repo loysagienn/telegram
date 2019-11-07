@@ -62,6 +62,7 @@ module.exports = {
         'no-plusplus': 'off',
         'no-throw-literal': 'off',
         'no-new': 'off',
+        'camelcase': 'off',
 
         // 'flowtype/use-flow-type': 1,
         // 'jsx-a11y/click-events-have-key-events': 'off',

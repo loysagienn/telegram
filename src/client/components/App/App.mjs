@@ -3,12 +3,17 @@ import {selectMainLayout} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
 import LoadingLayout from '../LoadingLayout';
 import LoginLayout from '../LoginLayout';
+import MainLayout from '../MainLayout';
 import css from './App.styl';
 
 
 const renderContent = (rootNode, layout, content) => {
     if (content) {
         content.destroy();
+    }
+
+    if (layout === 'main') {
+        return MainLayout(rootNode);
     }
 
     if (layout === 'login') {
@@ -20,7 +25,7 @@ const renderContent = (rootNode, layout, content) => {
 
 const App = () => {
     const rootNode = createDiv(css.app);
-    const [callbacks, destroy] = destroyCallbacks();
+    const [destroy, callbacks] = destroyCallbacks();
     let content = null;
 
     callbacks.push(subscribeSelector(selectMainLayout, (layout) => {

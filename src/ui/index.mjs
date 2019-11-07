@@ -25,8 +25,7 @@ export const addEvent = event => (element, callback) => {
 export const onClick = addEvent('click');
 export const onInput = addEvent('input');
 
-export const destroyCallbacks = (domNode) => {
-    const callbacks = [];
+export const destroyCallbacks = (domNode, callbacks = []) => {
     const destroy = () => {
         if (domNode && domNode.parentNode) {
             domNode.parentNode.removeChild(domNode);
@@ -34,7 +33,7 @@ export const destroyCallbacks = (domNode) => {
         callbacks.forEach(callback => callback());
     };
 
-    return [callbacks, destroy];
+    return [destroy, callbacks];
 };
 
 export const createEmitter = () => {

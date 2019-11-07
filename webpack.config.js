@@ -13,17 +13,7 @@ module.exports = {
     entry: {
         app: './src/client/index.mjs',
     },
-    externals: {
-        // ramda: 'R',
-        // react: 'React',
-        // 'react-dom': 'ReactDOM',
-        // recompose: 'Recompose',
-        // redux: 'Redux',
-        // 'react-redux': 'ReactRedux',
-        // 'redux-thunk': 'ReduxThunk',
-        // reselect: 'Reselect',
-        // window: 'window',
-    },
+    externals: {},
     output: {
         path: staticDir,
         filename: '[name].js',
