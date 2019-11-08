@@ -1,15 +1,14 @@
 import {promises as fs} from 'fs';
+import {DATABASE_PATH} from 'config';
 import {initState} from 'actions';
-import UserStore from './userStore';
+import {getUserStore} from './userStore';
 import handleMessage from './handleMessage';
-import activeConnections from './activeConnections';
 
 
 const activeStates = {};
-const DB_ROOT = '/home/vajs/telegram/db/';
 
 const initDbDirectory = async (userHash) => {
-    const dbDir = `${DB_ROOT}${userHash}`;
+    const dbDir = `${DATABASE_PATH}/${userHash}`;
 
     try {
         await fs.stat(dbDir);
@@ -20,30 +19,36 @@ const initDbDirectory = async (userHash) => {
     return dbDir;
 };
 
-const getUserStore = async (userHash) => {
-    if (userHash in activeStates) {
+const getStore = async (userHash) => {
+    if (activeStates[userHash]) {
         return activeStates[userHash];
     }
 
     const dbDir = await initDbDirectory(userHash);
 
-    return activeStates[userHash] = new UserStore(dbDir);
+    return getUserStore(userHash, dbDir);
 };
 
 
 const initConnection = async (connection) => {
     const {userHash} = connection;
 
-    const store = await getUserStore(userHash);
-
-    activeConnections[userHash] = {connection, store};
+    const store = await getStore(userHash);
 
     connection.send(initState(store.reduxStore.getState()));
 
-    store.on('updateAction', action => connection.send(action));
+    const updateActionListener = action => connection.send(action);
+    store.on('updateAction', updateActionListener);
 
-    connection.on('message', message => handleMessage(store, message));
+    const handleMessageListener = message => handleMessage(store, message);
+    connection.on('message', handleMessageListener);
 
+    connection.once('terminate', () => {
+        connection.off('message', handleMessageListener);
+        store.off('updateAction', updateActionListener);
+    });
+
+    // todo: get chats on login
     store.airgram.api.getChats({
         offsetOrder: '9223372036854775807',
         limit: 3,

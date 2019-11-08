@@ -1,3 +1,3 @@
 import App from './App';
 
-App();
+export const renderApp = () => App();

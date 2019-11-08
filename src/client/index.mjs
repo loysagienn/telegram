@@ -1,6 +1,6 @@
 import {dispatch} from 'client/store';
 import {socket} from './api';
-import './components';
+import {renderApp} from './components';
 
 
 socket.on('message', (message) => {
@@ -8,3 +8,5 @@ socket.on('message', (message) => {
         dispatch(message);
     }
 });
+
+renderApp();

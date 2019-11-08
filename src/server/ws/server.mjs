@@ -8,12 +8,40 @@ class Connection extends EventEmitter {
         super();
 
         this.ws = wsConnection;
+        this.terminated = false;
+        this.terminateTimeout = null;
 
         // todo: memory leak, чистить за собой при закрытии соединения
         wsConnection.on('message', message => this.onMessage(message));
+
+        this.terminateOnInactive();
+    }
+
+    terminateOnInactive() {
+        if (this.terminateTimeout) {
+            clearTimeout(this.terminateTimeout);
+
+            this.terminateTimeout = null;
+        }
+
+        if (this.terminated) {
+            return;
+        }
+
+        this.terminateTimeout = setTimeout(() => {
+            console.log(`terminate ws connection, user hash: ${this.userHash}`);
+
+            this.terminated = true;
+
+            this.emit('terminate');
+
+            this.ws.terminate();
+        }, 2 * 60 * 1000);
     }
 
     onMessage(messageStr) {
+        this.terminateOnInactive();
+
         if (messageStr === 'ping') {
             this.ws.send('pong');
 
@@ -33,6 +61,8 @@ class Connection extends EventEmitter {
         if (message.type === 'INIT_USER') {
             this.userHash = message.userHash;
 
+            console.log(`create ws connection, user hash: ${message.userHash}`);
+
             server.emit('connection', this);
 
             return;
@@ -49,7 +79,6 @@ class Connection extends EventEmitter {
 }
 
 const onConnect = (wsConnection) => {
-    console.log('on connect');
     new Connection(wsConnection);
 };
 

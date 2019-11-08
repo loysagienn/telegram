@@ -1,33 +1,27 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import send from 'koa-send';
+import {DEVELOP_STATIC_PATH} from 'config';
 import './ws';
-// import sendFile from './sendFile';
 
-
-console.log('i am server');
 
 const isProductionMode = process.env.NODE_ENV === 'production';
 
-const server = new Koa();
-
-server.use(bodyParser());
-
-// server.use(async (ctx, next) => {
-//     if (ctx.host === 'static.telegram.wweb.pro') {
-//         return sendFile(ctx);
-//     }
-
-//     return next();
-// });
+const DEVELOP_STATIC_SERVER_PORT = 3232;
 
 if (!isProductionMode) {
+    const server = new Koa();
+
+    server.use(bodyParser());
+
     server.use(async (ctx) => {
         const filePath = ctx.path;
-        const root = '/Users/vajs/projects/tg/static';
+        const root = DEVELOP_STATIC_PATH;
 
         return send(ctx, filePath, {root, index: 'index.html'});
     });
-}
 
-server.listen(3232);
+    server.listen(DEVELOP_STATIC_SERVER_PORT);
+
+    console.log(`Start develop static server on port ${DEVELOP_STATIC_SERVER_PORT}`);
+}

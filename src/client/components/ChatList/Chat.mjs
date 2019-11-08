@@ -1,3 +1,4 @@
+import {STATIC_URL, DATABASE_PATH} from 'config';
 import {subscribeSelector, select, dispatch} from 'client/store';
 import {
     selectChatLastMessage,
@@ -32,9 +33,9 @@ const setAvatarImage = (node, file) => {
         return;
     }
 
-    const relativePath = path.replace('/home/vajs/telegram/db', '');
+    const relativePath = path.replace(DATABASE_PATH, '');
 
-    node.style.backgroundImage = `url('http://static.telegram.wweb.pro${relativePath}')`;
+    node.style.backgroundImage = `url('${STATIC_URL}${relativePath}')`;
 };
 
 const renderAvatar = (chatId, callbacks) => {

@@ -1,15 +1,14 @@
 import {EventEmitter} from 'utils';
+import {WEB_SOCKET_URL} from 'config';
 import getUserHash from './getUserHash';
 
 const userHash = getUserHash();
 
-const wsUrl = 'ws://api.telegram.wweb.pro';
-
 let createWs = () => {
     console.log('create ws');
-    const ws = window.preCreatedWs || new WebSocket(wsUrl);
+    const ws = window.preCreatedWs || new WebSocket(WEB_SOCKET_URL);
 
-    createWs = () => new WebSocket(wsUrl);
+    createWs = () => new WebSocket(WEB_SOCKET_URL);
 
     return ws;
 };
@@ -94,12 +93,11 @@ class Ws extends EventEmitter {
 
         this.activeWs = null;
 
-        // todo: uncomment
-        // if (this.errorsCount < 3) {
-        //     this.createConnection();
-        // } else {
-        //     setTimeout(() => this.createConnection(), 5000);
-        // }
+        if (this.errorsCount < 3) {
+            this.createConnection();
+        } else {
+            setTimeout(() => this.createConnection(), Math.min(this.errorsCount * 1000, 20000));
+        }
     }
 }
 
