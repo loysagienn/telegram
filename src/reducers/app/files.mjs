@@ -13,6 +13,7 @@ export default (state = {}, {type, update}) => {
 
             return Object.assign({}, state, {[file.id]: file});
         }
+
         if (update._ === 'updateNewChat') {
             const {chat: {photo}} = update;
 
@@ -21,6 +22,12 @@ export default (state = {}, {type, update}) => {
             }
 
             const file = photo.small;
+
+            return Object.assign({}, state, {[file.id]: file});
+        }
+
+        if (update._ === 'updateFile') {
+            const {file} = update;
 
             return Object.assign({}, state, {[file.id]: file});
         }

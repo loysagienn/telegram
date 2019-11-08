@@ -13,6 +13,8 @@ import supergroupFullInfo from './supergroupFullInfo';
 import chatActions from './chatActions';
 import userStatuses from './userStatuses';
 import files from './files';
+import chatOrders from './chatOrders';
+import draftMessages from './draftMessages';
 
 export default combineReducers({
     authorizationState,
@@ -31,4 +33,6 @@ export default combineReducers({
     chatActions,
     userStatuses,
     files,
+    chatOrders,
+    draftMessages,
 });

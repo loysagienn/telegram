@@ -14,12 +14,12 @@ export const {dispatch, getState, subscribe} = store;
 export const select = selector => selector(getState());
 
 export const subscribeSelector = (selector, callback) => {
-    let currentValue = select(selector);
+    let currentValue = selector(getState());
 
     callback(currentValue);
 
     return subscribe(() => {
-        const value = select(selector);
+        const value = selector(getState());
 
         if (value === currentValue) {
             return;

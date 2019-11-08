@@ -56,6 +56,6 @@ module.exports = {
     plugins: [
         new ExtractTextPlugin('[name].css'),
     ],
-    // devtool: isProductionMode ? 'none' : 'cheap-module-source-map',
-    devtool: 'none',
+    devtool: isProductionMode ? 'none' : 'cheap-module-source-map',
+    // devtool: 'none',
 };

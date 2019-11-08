@@ -15,8 +15,17 @@
 .chatsWrapper
     padding: 7px 0
 
+.chatsContainer
+    position: relative
+
 .chatWrapper
+    position: absolute
+    left: 0
+    right: 0
+    top: 0
     padding: 1px 8px
+    will-change: transform
+    transition: transform 0.3s ease-out
 
 .chat
     height: 66px
@@ -33,12 +42,15 @@
     width: 50px
     height: 50px
     border-radius: 25px
-    background-color: $grayIconColor
+    background-color: $grayAvatarBgColor
+    background-position: center center
+    background-repeat: no-repeat
+    background-size: cover
 
 .desc
     position: absolute
     left: 66px
-    right: 46px
+    right: 56px
     top: 11px
     bottom: 11px
 
@@ -64,9 +76,24 @@
 
 .meta
     position: absolute
-    top: 8px
+    top: 11px
     right: 8px
-    background-color: $grayIconColor
-    width: 30px
-    height: 50px
+    // background-color: $grayBgColor
+    width: 40px
+    height: 44px
+
+.unreadCount
+    position: absolute
+    top: 23px
+    right: 0
+    padding: 0 6px
+    height: 20px
+    line-height: 20px
     border-radius: 10px
+    text-align: center
+    font-size: 12px
+    background-color: $grayIconColor
+    color: $white
+    display: none
+    &.visible
+        display: block;

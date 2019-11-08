@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect';
-// import {memoizeSimple} from 'utils';
+// import {createSelector} from 'utils';
 import {selectApp} from './common';
 
 export * from './common';

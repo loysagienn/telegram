@@ -1,34 +1,42 @@
 import {subscribeSelector} from 'client/store';
-import {selectChatList} from 'selectors';
+import {selectSortedChatList} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
 import css from './ChatList.styl';
 import chatItems from './chatItems';
 import Chat from './Chat';
+import {CHAT_HEIGHT} from './constants';
 
 
 const destroyChatItems = () => Object.keys(chatItems).forEach(key => chatItems[key].destroy());
 
-const renderList = (chatList, itemsList, rootNode) => {
-    rootNode.innerHTML = '';
+const renderList = (chatList, itemsList, chatsContainer) => {
+    chatsContainer.style.height = `${chatList.length * CHAT_HEIGHT}px`;
 
-    return chatList.map((chatId) => {
+    console.log('render chat list');
+
+    return chatList.map((chatId, index) => {
         const item = Chat(chatId);
 
-        rootNode.appendChild(item.node);
+        item.setOrder(index);
+
+        if (!item.node.parentElement) {
+            chatsContainer.appendChild(item.node);
+        }
 
         return item;
     });
 };
 
 const ChatList = () => {
-    const chatsWrapper = createDiv(css.chatsWrapper);
+    const chatsContainer = createDiv(css.chatsContainer);
+    const chatsWrapper = createDiv(css.chatsWrapper, chatsContainer);
     const rootNode = createDiv(css.root, chatsWrapper);
     const [destroy, callbacks] = destroyCallbacks(rootNode);
     let itemsList = [];
 
     callbacks.push(destroyChatItems);
-    callbacks.push(subscribeSelector(selectChatList, (chatList) => {
-        itemsList = renderList(chatList, itemsList, chatsWrapper);
+    callbacks.push(subscribeSelector(selectSortedChatList, (chatList) => {
+        itemsList = renderList(chatList, itemsList, chatsContainer);
     }));
 
     return {

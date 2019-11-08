@@ -7,12 +7,14 @@ import {
     selectUserStatus,
     selectChatPhotoFile,
     selectUserPhotoFile,
+    selectChatReadStatus,
 } from 'selectors';
 import {createDiv, createText, createSpan, destroyCallbacks} from 'ui';
 import {getWhen} from 'utils';
 import {loadFile} from 'actions';
 import css from './ChatList.styl';
 import chatItems from './chatItems';
+import {CHAT_HEIGHT} from './constants';
 
 
 const setAvatarImage = (node, file) => {
@@ -20,15 +22,19 @@ const setAvatarImage = (node, file) => {
         return;
     }
 
-    if (!file.local.path) {
-        if (!file.local.isDownloadingActive) {
+    const {path, isDownloadingActive, isDownloadingCompleted} = file.local;
+
+    if (!path) {
+        if (!isDownloadingActive && !isDownloadingCompleted) {
             dispatch(loadFile(file.id));
         }
 
         return;
     }
 
-    console.log('render file! ', file.local.path);
+    const relativePath = path.replace('/home/vajs/telegram/db', '');
+
+    node.style.backgroundImage = `url('http://static.telegram.wweb.pro${relativePath}')`;
 };
 
 const renderAvatar = (chatId, callbacks) => {
@@ -151,8 +157,32 @@ const renderStatus = (chatId, callbacks) => {
     return node;
 };
 
-const renderMeta = () => {
-    const node = createDiv(css.meta);
+const renderUnreadCount = (chatId, callbacks) => {
+    const unreadCountText = createText();
+    const node = createDiv(css.unreadCount, unreadCountText);
+
+    callbacks.push(subscribeSelector(selectChatReadStatus(chatId), (readStatus) => {
+        if (!readStatus) {
+            return;
+        }
+
+        const {unreadCount} = readStatus;
+
+        unreadCountText.textContent = unreadCount;
+
+        if (unreadCount) {
+            node.classList.add(css.visible);
+        } else {
+            node.classList.remove(css.visible);
+        }
+    }));
+
+    return node;
+};
+
+const renderMeta = (chatId, callbacks) => {
+    const unreadCountNode = renderUnreadCount(chatId, callbacks);
+    const node = createDiv(css.meta, unreadCountNode);
 
     return node;
 };
@@ -168,7 +198,7 @@ const Chat = (chatId) => {
     const nameNode = renderName(chatId, callbacks);
     const statusNode = renderStatus(chatId, callbacks);
     const descNode = createDiv(css.desc, nameNode, statusNode);
-    const metaNode = renderMeta();
+    const metaNode = renderMeta(chatId, callbacks);
 
     const contentNode = createDiv(css.chat, avatarNode, descNode, metaNode);
     const rootNode = createDiv(css.chatWrapper, contentNode);
@@ -177,8 +207,11 @@ const Chat = (chatId) => {
 
     callbacks.push(() => { delete chatItems[chatId]; });
 
+    const setOrder = index => rootNode.style.transform = `translate(0, ${index * CHAT_HEIGHT}px)`;
+
     return chatItems[chatId] = {
         node: rootNode,
+        setOrder,
         destroy,
     };
 };
