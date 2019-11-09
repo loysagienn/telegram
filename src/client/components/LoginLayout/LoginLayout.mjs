@@ -66,7 +66,8 @@ const LoginLayout = (parentNode) => {
     const [headerNode, headerText, helpText] = renderHeader();
     const controlNode = createDiv();
     const layoutNode = createDiv(css.layout, logoNode, headerNode, controlNode);
-    const rootNode = createDiv(css.root, layoutNode);
+    const flexWrapper = createDiv(css.flexWrapper, layoutNode);
+    const rootNode = createDiv(css.root, flexWrapper);
     const [destroy, callbacks] = destroyCallbacks(rootNode);
 
     callbacks.push(subscribeSelector(selectAuthorizationState, setHeaderText(headerText)));

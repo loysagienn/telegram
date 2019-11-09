@@ -36,6 +36,17 @@ module.exports = (api) => {
 
     if (isWebpack) {
         Object.assign(moduleResolverOptions.pathAlias, {});
+        // presets.push([
+        //     '@babel/preset-env',
+        //     {
+        //         targets: {
+        //             ie: '11',
+        //             safari: '11',
+        //         },
+        //         corejs: '3',
+        //         useBuiltIns: 'entry',
+        //     },
+        // ]);
     } else {
         plugins.push('@babel/plugin-transform-modules-commonjs');
         plugins.push(cssModulesTransform);

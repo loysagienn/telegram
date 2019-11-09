@@ -11,8 +11,10 @@ class UserStore extends EventEmitter {
         super();
 
         this.userHash = userHash;
+        this.inited = false;
         this.terminated = false;
         this.unusedCounter = 0;
+        this.authorizationState = null;
 
         this.reduxStore = createReduxStore();
 
@@ -99,6 +101,8 @@ class UserStore extends EventEmitter {
 
                 const isServiceAction = state === 'authorizationStateWaitTdlibParameters' ||
                                         state === 'authorizationStateWaitEncryptionKey';
+
+                this.authorizationState = state;
 
                 if (!isServiceAction) {
                     this.emit('updateAuthorizationState', state);

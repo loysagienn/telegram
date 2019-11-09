@@ -13,6 +13,7 @@ class Connection extends EventEmitter {
 
         // todo: memory leak, чистить за собой при закрытии соединения
         wsConnection.on('message', message => this.onMessage(message));
+        wsConnection.send('pong');
 
         this.terminateOnInactive();
     }
@@ -42,6 +43,8 @@ class Connection extends EventEmitter {
     onMessage(messageStr) {
         this.terminateOnInactive();
 
+        console.log(`ws message: ${messageStr}`);
+
         if (messageStr === 'ping') {
             this.ws.send('pong');
 
@@ -68,7 +71,12 @@ class Connection extends EventEmitter {
             return;
         }
 
-        console.log('message', message);
+        if (message.type === 'CLIENT_ERROR') {
+            console.log('Client error:');
+            console.log(message.error);
+
+            return;
+        }
 
         this.emit('message', message);
     }

@@ -1,4 +1,5 @@
-import {createInput, createEmitter, destroyCallbacks, onInput} from 'ui';
+import {createDiv, createInput, createEmitter, destroyCallbacks, onInput} from 'ui';
+import {EventEmitter} from 'utils';
 import css from './Input.styl';
 
 const valueSetter = input => value => input.value = value;
@@ -11,9 +12,14 @@ const renderInput = (placeholder) => {
     return input;
 };
 
-const Input = ({currentValue = '', placeholder = ''} = {}) => {
+const Input = ({currentValue = '', placeholder = '', className} = {}) => {
     const inputNode = renderInput(placeholder);
+    const rootNode = createDiv(css.root, inputNode);
+    if (className) {
+        rootNode.classList.add(className);
+    }
     const setNodeValue = valueSetter(inputNode);
+    let validator = null;
 
     const [destroy, callbacks] = destroyCallbacks(inputNode);
     const changeEmitter = createEmitter();
@@ -28,7 +34,17 @@ const Input = ({currentValue = '', placeholder = ''} = {}) => {
     };
 
     const onChange = () => {
-        const {value} = inputNode;
+        let {value} = inputNode;
+
+        if (validator) {
+            const validValue = validator(value);
+
+            if (validValue !== value) {
+                setNodeValue(validValue);
+            }
+
+            value = validValue;
+        }
 
         if (value === currentValue) {
             return;
@@ -42,9 +58,11 @@ const Input = ({currentValue = '', placeholder = ''} = {}) => {
     callbacks.push(onInput(inputNode, onChange));
 
     return {
-        node: inputNode,
+        node: rootNode,
+        inputNode,
         setValue,
         destroy,
+        setValidator: val => validator = val,
         onChange: changeEmitter.on,
         offChange: changeEmitter.off,
         get value() { return currentValue; },

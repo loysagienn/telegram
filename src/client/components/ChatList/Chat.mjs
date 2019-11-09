@@ -101,18 +101,18 @@ const getChatStatus = (content) => {
 
     if (content._ === 'messagePhoto') {
         if (content.caption) {
-            return `🖼 ${content.caption.text.substring(0, 50)}`;
+            return `\u{1f5bc} ${content.caption.text.substring(0, 50)}`;
         }
 
-        return '🖼';
+        return '\u{1f5bc}';
     }
 
     if (content._ === 'messageVideo') {
         if (content.caption) {
-            return `📹 ${content.caption.text.substring(0, 50)}`;
+            return `\u{1f4f9} ${content.caption.text.substring(0, 50)}`;
         }
 
-        return '📹';
+        return '\u{1f4f9}';
     }
 
     return content._;

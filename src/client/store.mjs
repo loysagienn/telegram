@@ -1,5 +1,5 @@
-
 import {createStore, applyMiddleware, compose} from 'redux';
+import {LOCALSTORAGE_STATE_KEY} from 'config';
 import initActionHandlers from 'actionHandlers';
 import reducer from './reducer';
 
@@ -30,5 +30,10 @@ export const subscribeSelector = (selector, callback) => {
         callback(value);
     });
 };
+
+window.addEventListener('unload', () => {
+    console.log('set state to local storage');
+    localStorage.setItem(LOCALSTORAGE_STATE_KEY, JSON.stringify(getState()));
+});
 
 export default store;

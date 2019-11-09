@@ -6,13 +6,16 @@
     right: 0
     top: 0
     bottom: 0
+    overflow: auto
+
+.flexWrapper
     display: flex
     justify-content: center
     align-items: center
-    overflow: auto
+    min-height: 100%
 
 .layout
-    padding: 10px
+    padding: 50px 10px 30px
     box-sizing: border-box
     width: 100%
     max-width: 300px
@@ -34,8 +37,58 @@
         max-width: 200px
         padding-top: 10px
 
+.waitPhone
+    position: relative
+    min-height: 200px
+    &.big
+        min-height: 350px
+
 .button
     margin-top: 30px
     visibility: hidden
     &.visible
         visibility: visible
+
+.countryInput
+    margin-bottom: 20px
+
+.countriesRoot
+    position: absolute
+    left: 0
+    right: 0
+    top: 50px
+    box-shadow: 0 1px 5px 0 rgba(0,0,0,0.5)
+    background-color: white
+    border-radius: 8px
+    overflow: auto
+    max-height: 300px
+    display: none
+    &.visible
+        display: block
+
+.countriesList
+    padding: 8px 0
+
+.country
+    display: flex
+    align-items: center
+    height: 45px
+    cursor: pointer
+    &.hidden
+        display: none
+    &:hover
+        background-color: $grayBgColor
+    .countryFlag
+        padding: 0 12px 0 12px
+        font-size: 20px
+    .countryName
+        font-size: 14px
+        flex-basis: 100%
+        .boldPart
+            color: $blueTextColor
+    .countryPhone
+        width: 100px
+        font-size: 14px
+        text-align: right
+        color: $grayTextColor
+        padding-right: 12px

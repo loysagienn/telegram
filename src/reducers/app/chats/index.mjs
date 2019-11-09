@@ -1,3 +1,4 @@
+// import 'core-js/features/array/includes';
 import {UPDATE} from 'actions';
 
 export const chats = (state = {}, {type, update}) => {

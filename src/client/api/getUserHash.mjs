@@ -1,15 +1,24 @@
+import {subscribeSelector} from 'client/store';
+import {selectAuthorizationState} from 'selectors';
 import {generateRandomString} from 'utils';
-
-const SORAGE_KEY = 'user_hash';
+import {LOCALSTORAGE_USER_HASH_KEY} from 'config';
 
 const getUserHash = () => {
-    let userHash = localStorage.getItem(SORAGE_KEY);
+    let userHash = localStorage.getItem(LOCALSTORAGE_USER_HASH_KEY);
 
     if (!userHash) {
         userHash = generateRandomString(30);
 
-        localStorage.setItem(SORAGE_KEY, userHash);
+        localStorage.setItem(LOCALSTORAGE_USER_HASH_KEY, userHash);
     }
+
+    subscribeSelector(selectAuthorizationState, (authorizationState) => {
+        if (authorizationState === 'authorizationStateClosed') {
+            localStorage.removeItem(LOCALSTORAGE_USER_HASH_KEY);
+
+            window.location.reload();
+        }
+    });
 
     return userHash;
 };

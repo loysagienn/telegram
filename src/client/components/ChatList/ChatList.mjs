@@ -12,8 +12,6 @@ const destroyChatItems = () => Object.keys(chatItems).forEach(key => chatItems[k
 const renderList = (chatList, itemsList, chatsContainer) => {
     chatsContainer.style.height = `${chatList.length * CHAT_HEIGHT}px`;
 
-    console.log('render chat list');
-
     return chatList.map((chatId, index) => {
         const item = Chat(chatId);
 

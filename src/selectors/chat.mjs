@@ -54,7 +54,7 @@ export const selectChatMessages = memoizeSimple(
 
 export const selectChatPhotoFile = memoizeSimple(
     chatId => createSelector(selectChat(chatId), selectFiles, (chat, files) => {
-        if (!chat.photo) {
+        if (!chat || !chat.photo) {
             return null;
         }
 

@@ -25,6 +25,11 @@ export const addEvent = event => (element, callback) => {
 
 export const onClick = addEvent('click');
 export const onInput = addEvent('input');
+export const onFocus = addEvent('focus');
+export const onBlur = addEvent('blur');
+export const onMouseDown = addEvent('mousedown');
+export const onMouseEnter = addEvent('mouseenter');
+export const onError = addEvent('error');
 
 export const destroyCallbacks = (domNode, callbacks = []) => {
     const destroy = () => {

@@ -1,16 +1,18 @@
 import {EventEmitter} from 'utils';
 import {WEB_SOCKET_URL} from 'config';
+import {onError} from 'ui';
 import getUserHash from './getUserHash';
 
 const userHash = getUserHash();
 
 let createWs = () => {
-    console.log('create ws');
-    const ws = window.preCreatedWs || new WebSocket(WEB_SOCKET_URL);
+    createWs = () => [new WebSocket(WEB_SOCKET_URL)];
 
-    createWs = () => new WebSocket(WEB_SOCKET_URL);
+    if (window.preCreatedWs && !window.preCreatedWsIsClosed) {
+        return [window.preCreatedWs, window.preCreatedWsIsAlreadyOpen];
+    }
 
-    return ws;
+    return [new WebSocket(WEB_SOCKET_URL)];
 };
 
 class Ws extends EventEmitter {
@@ -23,6 +25,8 @@ class Ws extends EventEmitter {
 
         this.createConnection();
         this.startPing();
+
+        onError(window, error => this.send({type: 'CLIENT_ERROR', error}));
     }
 
     startPing() {
@@ -67,9 +71,9 @@ class Ws extends EventEmitter {
 
     createConnection() {
         console.log('start ws connection');
-        const ws = createWs();
+        const [ws, isOpen] = createWs();
 
-        ws.addEventListener('open', () => {
+        const onOpen = () => {
             console.log('ws open');
             this.activeWs = ws;
             const {queue} = this;
@@ -78,8 +82,13 @@ class Ws extends EventEmitter {
 
             queue.forEach(item => this.send(item));
             this.send({type: 'INIT_USER', userHash});
-        });
+        };
 
+        if (isOpen) {
+            onOpen();
+        } else {
+            ws.addEventListener('open', onOpen);
+        }
 
         ws.onmessage = event => this.onMessage(event);
 

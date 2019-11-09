@@ -8,6 +8,12 @@ export const selectUsers = createSelector(selectApp, ({users}) => users);
 
 export const selectUser = memoizeSimple(userId => createSelector(selectUsers, users => (users[userId] || null)));
 
+export const selectUsersFullInfo = createSelector(selectApp, ({usersFullInfo}) => usersFullInfo);
+
+export const selectUserFullInfo = memoizeSimple(
+    userId => createSelector(selectUsersFullInfo, userFullInfo => (userFullInfo[userId] || null)),
+);
+
 export const selectUserStatuses = createSelector(selectApp, ({userStatuses}) => userStatuses);
 
 export const selectUserStatus = memoizeSimple(
