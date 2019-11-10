@@ -1,10 +1,14 @@
-import {dispatch} from 'client/store';
+import {dispatch, subscribeSelector} from 'client/store';
 import {setAuthPhone} from 'actions';
-import {createDiv, createText, destroyCallbacks, onClick, onFocus, onBlur, onMouseDown, onMouseEnter} from 'ui';
-import {countryCodes, countries, countriesByPhone} from 'constants';
+import {selectAuthorizationLoading, selectPhoneNumberInvalid} from 'selectors';
+import {createDiv, createText, destroyCallbacks, onClick, onFocus, onBlur, onMouseDown, onMouseEnter, onKeyDown} from 'ui';
+import {countryCodes, countries, countriesByPhone} from 'countries';
+import {ENTER, ARROW_DOWN, ARROW_UP} from 'constants/keyCodes';
 import Input from '../Input';
 import Button from '../Button';
 import css from './LoginLayout.styl';
+
+const isTouchDevice = 'ontouchstart' in document.documentElement;
 
 const getCountryByPhone = (phone) => {
     phone = phone.replace(/[^0-9]/ig, '');
@@ -20,6 +24,27 @@ const getCountryByPhone = (phone) => {
     return null;
 };
 
+let focusedCountry = null;
+
+const focusCountry = (item, countryInput) => {
+    if (focusedCountry) {
+        focusedCountry.node.classList.remove(css.focused);
+    }
+
+    if (!item) {
+        focusedCountry = null;
+
+        countryInput.inputNode.placeholder = '';
+
+        return;
+    }
+
+    item.node.classList.add(css.focused);
+    countryInput.inputNode.placeholder = item.name;
+
+    focusedCountry = item;
+};
+
 const renderCountry = (root, {code, name, phone, emoji}, onSelectCountry, countryInput, callbacks) => {
     const flagNode = createDiv(css.countryFlag, createText(emoji));
     const nameNode = createDiv(css.countryName, createText(name));
@@ -27,7 +52,6 @@ const renderCountry = (root, {code, name, phone, emoji}, onSelectCountry, countr
     const node = createDiv(css.country, flagNode, nameNode, phoneNode);
 
     callbacks.push(onClick(node, () => onSelectCountry({code, name, phone, emoji})));
-    callbacks.push(onMouseEnter(node, () => countryInput.inputNode.placeholder = name));
 
     root.appendChild(node);
 
@@ -37,7 +61,7 @@ const renderCountry = (root, {code, name, phone, emoji}, onSelectCountry, countr
 
             nameNode.innerHTML = name;
 
-            return;
+            return true;
         }
 
         const regexp = new RegExp(substr, 'i');
@@ -45,46 +69,88 @@ const renderCountry = (root, {code, name, phone, emoji}, onSelectCountry, countr
 
         if (!match) {
             node.classList.add(css.hidden);
-        } else {
-            node.classList.remove(css.hidden);
-            const {0: matchStr, index} = match;
 
-            nameNode.innerHTML = `${name.substr(0, index)}<span class="${css.boldPart}">${matchStr}</span>${name.substr(index + matchStr.length)}`;
+            if (focusedCountry && focusedCountry.code === code) {
+                focusCountry(null, countryInput);
+            }
+
+            return false;
         }
+
+        node.classList.remove(css.hidden);
+        const {0: matchStr, index} = match;
+
+        nameNode.innerHTML = `${name.substr(0, index)}<span class="${css.boldPart}">${matchStr}</span>${name.substr(index + matchStr.length)}`;
+
+        return true;
     };
 
-    return {
+    const item = {
+        code,
+        name,
+        phone,
+        emoji,
         node,
         filter,
     };
+
+    if (!isTouchDevice) {
+        callbacks.push(onMouseEnter(node, () => focusCountry(item, countryInput)));
+    }
+    callbacks.push(onBlur(countryInput.inputNode, () => focusCountry(null, countryInput)));
+
+    return item;
 };
 
 const renderCountries = (countryInput, callbacks, phoneInput) => {
-    const countriesList = createDiv(css.countriesList);
+    const emptyList = createDiv(css.emptyList, createText('No countries found'));
+    const countriesList = createDiv(css.countriesList, emptyList);
     const countriesRoot = createDiv(css.countriesRoot, countriesList);
     let currentCountryCode = null;
-
-    callbacks.push(onMouseDown(countriesRoot, event => event.preventDefault()));
-    callbacks.push(onFocus(countryInput.inputNode, () => countriesRoot.classList.add(css.visible)));
-    callbacks.push(onBlur(countryInput.inputNode, () => countriesRoot.classList.remove(css.visible)));
-
     let countryItems = [];
+    let visibleItems = [];
+
+    const filterItems = (value) => {
+        visibleItems = [];
+
+        countryItems.forEach((item) => {
+            const isVisible = item.filter(value);
+
+            if (isVisible) {
+                visibleItems.push(item);
+            }
+        });
+
+        if (visibleItems.length) {
+            emptyList.classList.remove(css.visible);
+        } else {
+            emptyList.classList.add(css.visible);
+        }
+    };
 
     const onSelectCountry = ({phone, name, code}) => {
         currentCountryCode = code;
         countryInput.setValue(name);
-        countryItems.forEach(item => item.filter());
+        filterItems(null);
         phoneInput.setValue(`+${phone} `);
         phoneInput.focus();
     };
 
-    callbacks.push(onBlur(countryInput.inputNode, () => countryInput.inputNode.placeholder = 'Country'));
-
     countryItems = countryCodes.map(
         code => renderCountry(countriesList, countries[code], onSelectCountry, countryInput, callbacks),
     );
+    visibleItems = countryItems;
 
-    callbacks.push(countryInput.onChange(value => countryItems.forEach(item => item.filter(value))));
+    callbacks.push(onMouseDown(countriesRoot, event => event.preventDefault()));
+    callbacks.push(onFocus(countryInput.inputNode, () => {
+        countriesRoot.classList.add(css.visible);
+    }));
+    callbacks.push(onBlur(countryInput.inputNode, () => {
+        countriesRoot.classList.remove(css.visible);
+        countryInput.inputNode.placeholder = '';
+    }));
+
+    callbacks.push(countryInput.onChange(filterItems));
 
     callbacks.push(phoneInput.onChange((value) => {
         const country = getCountryByPhone(value);
@@ -103,23 +169,73 @@ const renderCountries = (countryInput, callbacks, phoneInput) => {
         }
     }));
 
+    callbacks.push(onKeyDown(countryInput.inputNode, (event) => {
+        const {keyCode} = event;
+
+        if (keyCode === ENTER) {
+            if (focusedCountry) {
+                onSelectCountry(focusedCountry);
+            } else if (visibleItems.length === 1) {
+                onSelectCountry(visibleItems[0]);
+            }
+        }
+
+        if (keyCode === ARROW_DOWN) {
+            if (visibleItems.length === 0) {
+                return;
+            }
+
+            let index = 0;
+
+            if (focusedCountry) {
+                const currentIndex = visibleItems.indexOf(focusedCountry);
+
+                index = Math.min(currentIndex + 1, visibleItems.length - 1);
+            }
+
+            focusCountry(visibleItems[index], countryInput);
+        }
+
+        if (keyCode === ARROW_UP) {
+            event.preventDefault();
+
+            if (visibleItems.length === 0) {
+                return;
+            }
+
+            let index = -1;
+
+            if (focusedCountry) {
+                const currentIndex = visibleItems.indexOf(focusedCountry);
+
+                index = currentIndex - 1;
+            }
+
+            if (index === -1) {
+                focusCountry(null, countryInput);
+            } else {
+                focusCountry(visibleItems[index], countryInput);
+            }
+        }
+    }));
+
     return {
         node: countriesRoot,
     };
 };
 
 const renderCountryInput = () => {
-    const input = Input({placeholder: 'Country', className: css.countryInput});
+    const input = Input({title: 'Country', className: css.countryInput});
 
     return input;
 };
 
 const renderPhoneInput = (callbacks) => {
-    const input = Input({placeholder: 'Phone Number'});
+    const input = Input({title: 'Phone Number'});
 
     input.inputNode.type = 'tel';
 
-    callbacks.push(input.setValidator((value) => {
+    input.setValidator((value) => {
         value = value.replace(/[-–—−]/ig, ' ');
         value = value.replace(/[^+ 0-9]/ig, '');
         if (value && value.charAt(0) !== '+') {
@@ -127,6 +243,12 @@ const renderPhoneInput = (callbacks) => {
         }
 
         return value;
+    });
+
+    callbacks.push(onKeyDown(input.inputNode, ({keyCode}) => {
+        if (keyCode === ENTER) {
+            dispatch(setAuthPhone(input.value));
+        }
     }));
 
     callbacks.push(onFocus(input.inputNode, () => {
@@ -143,6 +265,7 @@ const renderButton = (input) => {
         text: 'NEXT',
         onClick: () => dispatch(setAuthPhone(input.value)),
         className: css.button,
+        loadingSelector: selectAuthorizationLoading,
     });
 
     return button;
@@ -164,9 +287,10 @@ const WaitPhone = (controlNode) => {
     const countryInput = renderCountryInput();
     const phoneInput = renderPhoneInput(callbacks);
     const countriesComp = renderCountries(countryInput, callbacks, phoneInput);
-    const button = renderButton(phoneInput);
-    const rootNode = createDiv(css.waitPhone, countriesComp.node, countryInput.node, phoneInput.node, button.node);
+    const button = renderButton(phoneInput, callbacks);
+    const rootNode = createDiv(css.waitPhone, countryInput.node, phoneInput.node, button.node, countriesComp.node);
     const [destroy] = destroyCallbacks(rootNode, callbacks);
+    callbacks.push(() => countryInput.destroy());
     callbacks.push(() => phoneInput.destroy());
     callbacks.push(() => button.destroy());
     onInputChange(callbacks, phoneInput, button);
@@ -179,7 +303,14 @@ const WaitPhone = (controlNode) => {
             rootNode.classList.add(css.big);
         }
     }));
+
     callbacks.push(onBlur(countryInput.inputNode, () => rootNode.classList.remove(css.big)));
+
+    callbacks.push(subscribeSelector(selectPhoneNumberInvalid, (phoneNumberInvalid) => {
+        if (phoneNumberInvalid) {
+            phoneInput.setInvalid(true);
+        }
+    }));
 
     return {
         node: rootNode,

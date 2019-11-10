@@ -13,7 +13,7 @@ export const {dispatch, getState, subscribe} = store;
 
 export const select = selector => selector(getState());
 
-export const subscribeSelector = (selector, callback) => {
+export const subscribeSelector = (selector, callback, skipIfFalsy) => {
     let currentValue = selector(getState());
 
     callback(currentValue);
@@ -22,6 +22,10 @@ export const subscribeSelector = (selector, callback) => {
         const value = selector(getState());
 
         if (value === currentValue) {
+            return;
+        }
+
+        if (skipIfFalsy && !value) {
             return;
         }
 

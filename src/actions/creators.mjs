@@ -6,6 +6,8 @@ import {
     LOAD_FILE,
     BATCH_ACTIONS,
     USE_LOCALSTORAGE_STATE,
+    PHONE_NUMBER_INVALID,
+    PHONE_CODE_INVALID,
 } from './types';
 
 
@@ -16,3 +18,5 @@ export const setAuthCode = code => ({type: SET_AUTH_CODE, code});
 export const loadFile = fileId => ({type: LOAD_FILE, fileId});
 export const batchActions = actions => ({type: BATCH_ACTIONS, actions});
 export const useLocalstorageState = () => ({type: USE_LOCALSTORAGE_STATE});
+export const phoneNumberInvalid = () => ({type: PHONE_NUMBER_INVALID});
+export const phoneCodeInvalid = () => ({type: PHONE_CODE_INVALID});

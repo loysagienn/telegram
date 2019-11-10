@@ -57,7 +57,7 @@
     left: 0
     right: 0
     top: 50px
-    box-shadow: 0 1px 5px 0 rgba(0,0,0,0.5)
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.3)
     background-color: white
     border-radius: 8px
     overflow: auto
@@ -69,6 +69,14 @@
 .countriesList
     padding: 8px 0
 
+.emptyList
+    display: none
+    text-align: center
+    padding: 30px 10px
+    color: $grayTextColor
+    &.visible
+        display: block
+
 .country
     display: flex
     align-items: center
@@ -76,7 +84,7 @@
     cursor: pointer
     &.hidden
         display: none
-    &:hover
+    &.focused
         background-color: $grayBgColor
     .countryFlag
         padding: 0 12px 0 12px

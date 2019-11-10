@@ -30,6 +30,7 @@ export const onBlur = addEvent('blur');
 export const onMouseDown = addEvent('mousedown');
 export const onMouseEnter = addEvent('mouseenter');
 export const onError = addEvent('error');
+export const onKeyDown = addEvent('keydown');
 
 export const destroyCallbacks = (domNode, callbacks = []) => {
     const destroy = () => {

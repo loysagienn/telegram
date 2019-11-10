@@ -7,6 +7,8 @@ export const DEVELOP_STATIC_PATH = '/Users/vajs/projects/tg/static';
 
 export const DATABASE_PATH = '/home/vajs/telegram/db';
 
+export const FILES_PATH = '/home/vajs/telegram/files';
+
 export const TDLIBJSON_PATH = '/home/vajs/td/tdlib/lib/libtdjson';
 
 export const LOCALSTORAGE_STATE_KEY = 'app_state';

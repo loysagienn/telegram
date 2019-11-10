@@ -44,7 +44,7 @@ const renderAvatar = (chatId, callbacks) => {
     const type = select(selectChatType(chatId));
     const fileSelector = type._ === 'chatTypePrivate' ? selectUserPhotoFile(type.userId) : selectChatPhotoFile(chatId);
 
-    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file)));
+    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file)), true);
 
     return node;
 };
@@ -53,7 +53,7 @@ const renderName = (chatId, callbacks) => {
     const text = createText();
     const node = createDiv(css.name, text);
 
-    callbacks.push(subscribeSelector(selectChat(chatId), chat => text.textContent = chat.title));
+    callbacks.push(subscribeSelector(selectChat(chatId), chat => text.textContent = chat.title), true);
 
     return node;
 };
@@ -91,7 +91,7 @@ const renderUserStatus = (userId, text, node, callbacks) => {
         }
 
         text.textContent = getUserStatus(status);
-    }));
+    }), true);
 };
 
 const getChatStatus = (content) => {
@@ -101,18 +101,18 @@ const getChatStatus = (content) => {
 
     if (content._ === 'messagePhoto') {
         if (content.caption) {
-            return `\u{1f5bc} ${content.caption.text.substring(0, 50)}`;
+            return `\\u{1f5bc} ${content.caption.text.substring(0, 50)}`;
         }
 
-        return '\u{1f5bc}';
+        return '\\u{1f5bc}';
     }
 
     if (content._ === 'messageVideo') {
         if (content.caption) {
-            return `\u{1f4f9} ${content.caption.text.substring(0, 50)}`;
+            return `\\u{1f4f9} ${content.caption.text.substring(0, 50)}`;
         }
 
-        return '\u{1f4f9}';
+        return '\\u{1f4f9}';
     }
 
     return content._;

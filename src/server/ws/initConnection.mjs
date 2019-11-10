@@ -1,48 +1,20 @@
-import {promises as fs} from 'fs';
-import {DATABASE_PATH} from 'config';
+
 import {initState, useLocalstorageState} from 'actions';
 import {getUserStore} from './userStore';
 import handleMessage from './handleMessage';
 
 
-const activeStates = {};
-
-const initDbDirectory = async (userHash) => {
-    const dbDir = `${DATABASE_PATH}/${userHash}`;
-
-    try {
-        await fs.stat(dbDir);
-    } catch (error) {
-        await fs.mkdir(dbDir);
-    }
-
-    return dbDir;
-};
-
-const getStore = async (userHash) => {
-    if (activeStates[userHash]) {
-        return activeStates[userHash];
-    }
-
-    const date = Date.now();
-    const dbDir = await initDbDirectory(userHash);
-    console.log(`initDbDirectory time: ${Date.now() - date}ms`);
-
-    return getUserStore(userHash, dbDir);
-};
-
-
 const initConnection = async (connection) => {
     const {userHash} = connection;
     const date = Date.now();
-    const store = await getStore(userHash);
+    const store = await getUserStore(userHash);
     console.log(`getStore time: ${Date.now() - date}ms`);
 
 
     const updateActionListener = action => connection.send(action);
     store.on('updateAction', updateActionListener);
 
-    const handleMessageListener = message => handleMessage(store, message);
+    const handleMessageListener = message => handleMessage(store, message, connection);
     connection.on('message', handleMessageListener);
 
     connection.once('terminate', () => {

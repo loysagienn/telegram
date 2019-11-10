@@ -21,6 +21,8 @@ const MainLayout = (parentNode) => {
 
     parentNode.appendChild(rootNode);
 
+    requestAnimationFrame(() => contentNode.classList.add(css.visible));
+
     return {
         node: rootNode,
         destroy,

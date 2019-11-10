@@ -1,28 +1,101 @@
-import {createDiv, createInput, createEmitter, destroyCallbacks, onInput} from 'ui';
-import {EventEmitter} from 'utils';
+import {
+    createDiv,
+    createText,
+    createInput,
+    createEmitter,
+    destroyCallbacks,
+    onInput,
+    onFocus,
+    onBlur,
+} from 'ui';
+// import {EventEmitter} from 'utils';
 import css from './Input.styl';
 
-const valueSetter = input => value => input.value = value;
-
-const renderInput = (placeholder) => {
+const renderInput = () => {
     const input = createInput(css.input);
-
-    input.placeholder = placeholder;
 
     return input;
 };
 
-const Input = ({currentValue = '', placeholder = '', className} = {}) => {
-    const inputNode = renderInput(placeholder);
-    const rootNode = createDiv(css.root, inputNode);
+const renderTitle = (textStr, inputNode, callbacks) => {
+    const text = createText(textStr);
+    const node = createDiv(css.title, text);
+
+    const takeUp = () => node.classList.add(css.up);
+    const moveDown = () => node.classList.remove(css.up);
+
+    callbacks.push(onFocus(inputNode, () => {
+        node.classList.add(css.focused);
+        takeUp();
+    }));
+
+    callbacks.push(onBlur(inputNode, () => {
+        node.classList.remove(css.focused);
+        if (!inputNode.value) {
+            moveDown();
+        }
+    }));
+
+    return {
+        text,
+        node,
+        takeUp,
+        moveDown,
+    };
+};
+
+const renderBorder = (inputNode, callbacks) => {
+    const node = createDiv(css.border);
+
+    callbacks.push(onFocus(inputNode, () => node.classList.add(css.focused)));
+    callbacks.push(onBlur(inputNode, () => node.classList.remove(css.focused)));
+
+    return {node};
+};
+
+const Input = ({currentValue = '', title: titleText = '', className} = {}) => {
+    const changeEmitter = createEmitter();
+    const callbacks = [];
+    const inputNode = renderInput();
+    const title = renderTitle(titleText, inputNode, callbacks);
+    const border = renderBorder(inputNode, callbacks);
+    const rootNode = createDiv(css.root, border.node, title.node, inputNode);
     if (className) {
         rootNode.classList.add(className);
     }
-    const setNodeValue = valueSetter(inputNode);
+
+    let isInputInvalid = false;
+
+    const setInvalid = (isInvalid) => {
+        if (isInvalid === isInputInvalid) {
+            return;
+        }
+
+        isInputInvalid = isInvalid;
+
+        if (isInvalid) {
+            title.text.textContent = `Invalid ${titleText}`;
+            rootNode.classList.add(css.invalid);
+        } else {
+            title.text.textContent = titleText;
+            rootNode.classList.remove(css.invalid);
+        }
+    };
+
+    const setNodeValue = (value) => {
+        inputNode.value = value;
+
+        setInvalid(false);
+
+        if (value || inputNode.placeholder) {
+            title.takeUp();
+        } else {
+            title.moveDown();
+        }
+    };
     let validator = null;
 
-    const [destroy, callbacks] = destroyCallbacks(inputNode);
-    const changeEmitter = createEmitter();
+    const [destroy] = destroyCallbacks(inputNode, callbacks);
     callbacks.push(changeEmitter.off);
 
     setNodeValue(currentValue);
@@ -34,6 +107,8 @@ const Input = ({currentValue = '', placeholder = '', className} = {}) => {
     };
 
     const onChange = () => {
+        setInvalid(false);
+
         let {value} = inputNode;
 
         if (validator) {
@@ -67,6 +142,7 @@ const Input = ({currentValue = '', placeholder = '', className} = {}) => {
         offChange: changeEmitter.off,
         get value() { return currentValue; },
         focus: () => inputNode.focus(),
+        setInvalid,
     };
 };
 

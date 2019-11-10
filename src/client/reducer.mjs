@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {app, lastAction} from 'reducers';
+import {app, lastAction, ui} from 'reducers';
 import {INIT_STATE, BATCH_ACTIONS, USE_LOCALSTORAGE_STATE} from 'actions';
 import {LOCALSTORAGE_STATE_KEY} from 'config';
 
@@ -18,7 +18,7 @@ try {
 
 let activeReducer;
 
-const reducer = combineReducers({app, lastAction});
+const reducer = combineReducers({app, lastAction, ui});
 
 const reduceActions = (state, actions) => actions.reduce((acc, action) => reducer(acc, action), state);
 

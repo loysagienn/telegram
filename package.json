@@ -12,7 +12,7 @@
     "clear-dist": "rm -rf './dist'",
     "babel": "npm run clear-dist && NODE_ENV=production BABEL_ENV=production babel src --out-dir dist",
     "babel-dev": "npm run clear-dist && NODE_ENV=development BABEL_ENV=development babel src --out-dir dist -w",
-    "webpack": "NODE_ENV=production npx webpack",
+    "webpack": "NODE_ENV=production npx webpack && node ./buildUnicode.js",
     "webpack-with-stats": "NODE_ENV=production npx webpack --profile --json > /home/vajs/public/myforms/webpack-bundle-stats.json",
     "webpack-dev": "NODE_ENV=development npx webpack --watch --progress",
     "webpack-dev-server": "NODE_ENV=development npx webpack-dev-server",

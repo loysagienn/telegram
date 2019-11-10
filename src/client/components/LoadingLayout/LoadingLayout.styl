@@ -11,8 +11,11 @@
     align-items: center;
 
 .loading
-    rotation(0.4s)
-    svg
-        display: block
-        width: 60px
-        height: 60px
+    opacity: 0
+    transition: opacity 0.5s ease-out
+    &.visible
+        opacity: 1
+
+.icon
+    width: 80px
+    height: 80px

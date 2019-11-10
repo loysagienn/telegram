@@ -1,6 +1,8 @@
+import {promises as fs} from 'fs';
+import {DATABASE_PATH, TDLIBJSON_PATH, FILES_PATH} from 'config';
 import EventEmitter from 'events';
 import {Airgram} from 'airgram';
-import {TDLIBJSON_PATH} from 'config';
+
 import {update as updateAction} from 'actions';
 import createReduxStore from './createReduxStore';
 
@@ -19,11 +21,16 @@ class UserStore extends EventEmitter {
         this.reduxStore = createReduxStore();
 
         this.airgram = new Airgram({
+            useTestDc: true,
             apiId: 262680,
             apiHash: '177a6b76ea819a88e35525aa0692e850',
             command: TDLIBJSON_PATH,
             databaseDirectory: dbDir,
-            useFileDatabase: false,
+            // filesDirectory: filesDir,
+            useFileDatabase: true,
+            useChatInfoDatabase: true,
+            useMessageDatabase: true,
+            useSecretChats: false,
         });
 
         this.initMiddlewares();
@@ -114,10 +121,38 @@ class UserStore extends EventEmitter {
     }
 }
 
-export const getUserStore = (userHash, dbDir) => {
+const initDbDirectory = async (userHash) => {
+    const dbDir = `${DATABASE_PATH}/${userHash}`;
+
+    try {
+        await fs.stat(dbDir);
+    } catch (error) {
+        await fs.mkdir(dbDir);
+    }
+
+    return dbDir;
+};
+
+// const initFilesDirectory = async (userHash) => {
+//     const filesDir = `${FILES_PATH}/${userHash}`;
+
+//     try {
+//         await fs.stat(filesDir);
+//     } catch (error) {
+//         await fs.mkdir(filesDir);
+//     }
+
+//     return filesDir;
+// };
+
+export const getUserStore = async (userHash) => {
     if (activeStates[userHash]) {
         return activeStates[userHash];
     }
+
+    const date = Date.now();
+    const dbDir = await initDbDirectory(userHash);
+    console.log(`initDirectories time: ${Date.now() - date}ms`);
 
     return new UserStore(userHash, dbDir);
 };

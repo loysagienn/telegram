@@ -6,10 +6,12 @@ export * from './common';
 export * from './user';
 export * from './files';
 export * from './chat';
+export * from './ui';
 
 export const selectAuthorizationState = createSelector(selectApp, ({authorizationState}) => authorizationState);
 
 export const selectMainLayout = createSelector(selectAuthorizationState, (authorizationState) => {
+    // return 'loading';
     if (
         authorizationState === 'authorizationStateWaitPhoneNumber'
         || authorizationState === 'authorizationStateWaitCode'

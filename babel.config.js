@@ -2,7 +2,7 @@ const stylus = require('stylus');
 const {resolvePath} = require('./buildHelpers');
 
 
-// const isProductionMode = process.env.NODE_ENV === 'production';
+const isProductionMode = process.env.NODE_ENV === 'production';
 
 const isWebpackCaller = ({name}) => name === 'babel-loader';
 
@@ -35,18 +35,23 @@ module.exports = (api) => {
     ];
 
     if (isWebpack) {
-        Object.assign(moduleResolverOptions.pathAlias, {});
-        // presets.push([
-        //     '@babel/preset-env',
-        //     {
-        //         targets: {
-        //             ie: '11',
-        //             safari: '11',
-        //         },
-        //         corejs: '3',
-        //         useBuiltIns: 'entry',
-        //     },
-        // ]);
+        Object.assign(moduleResolverOptions.pathAlias, {
+            countries: isProductionMode ? 'constants/countriesProduction' : 'constants/countries',
+        });
+
+        if (isProductionMode) {
+            presets.push([
+                '@babel/preset-env',
+                {
+                    targets: {
+                        ie: '11',
+                        safari: '11',
+                    },
+                    corejs: '3',
+                    useBuiltIns: 'entry',
+                },
+            ]);
+        }
     } else {
         plugins.push('@babel/plugin-transform-modules-commonjs');
         plugins.push(cssModulesTransform);

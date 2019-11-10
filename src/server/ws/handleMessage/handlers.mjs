@@ -1,19 +1,38 @@
+import {phoneNumberInvalid, phoneCodeInvalid} from 'actions';
+
+
+const setAuthPhone = async (store, message, connection) => {
+    const {phoneNumber} = message;
+
+    const result = await store.airgram.api.setAuthenticationPhoneNumber({phoneNumber});
+
+    if (result.response._ === 'error' && result.response.message === 'PHONE_NUMBER_INVALID') {
+        connection.send(phoneNumberInvalid());
+    }
+
+    return result;
+};
+
+const setAuthCode = async (store, message, connection) => {
+    const {code} = message;
+
+    const result = await store.airgram.api.checkAuthenticationCode({code});
+
+    if (result.response._ === 'error' && result.response.message === 'PHONE_CODE_INVALID') {
+        connection.send(phoneCodeInvalid());
+    }
+
+    return result;
+};
+
 const handlers = {
-    SET_AUTH_PHONE: (store, message) => {
-        const {phoneNumber} = message;
-
-        store.airgram.api.setAuthenticationPhoneNumber({phoneNumber});
-    },
-    SET_AUTH_CODE: (store, message) => {
-        const {code} = message;
-
-        store.airgram.api.checkAuthenticationCode({code});
-    },
+    SET_AUTH_PHONE: setAuthPhone,
+    SET_AUTH_CODE: setAuthCode,
 
     LOAD_FILE: (store, message) => {
         const {fileId} = message;
 
-        store.airgram.api.downloadFile({
+        return store.airgram.api.downloadFile({
             fileId,
             priority: 10,
             limit: 0,

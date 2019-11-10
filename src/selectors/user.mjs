@@ -22,7 +22,7 @@ export const selectUserStatus = memoizeSimple(
 
 export const selectUserPhotoFile = memoizeSimple(
     userId => createSelector(selectUser(userId), selectFiles, (user, files) => {
-        if (!user.profilePhoto) {
+        if (!user || !user.profilePhoto) {
             return null;
         }
 

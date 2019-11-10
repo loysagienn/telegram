@@ -1,13 +1,21 @@
-import {dispatch} from 'client/store';
+import {dispatch, subscribeSelector} from 'client/store';
 import {setAuthCode} from 'actions';
-import {createDiv, destroyCallbacks} from 'ui';
+import {selectAuthorizationLoading, selectPhoneCodeInvalid} from 'selectors';
+import {createDiv, destroyCallbacks, onKeyDown} from 'ui';
+import {ENTER} from 'constants/keyCodes';
 import Input from '../Input';
 import Button from '../Button';
 import css from './LoginLayout.styl';
 
 
-const renderInput = () => {
-    const input = Input({placeholder: 'Code'});
+const renderInput = (callbacks) => {
+    const input = Input({title: 'Code'});
+
+    callbacks.push(onKeyDown(input.inputNode, ({keyCode}) => {
+        if (keyCode === ENTER) {
+            dispatch(setAuthCode(input.value));
+        }
+    }));
 
     return input;
 };
@@ -17,6 +25,7 @@ const renderButton = (input) => {
         text: 'NEXT',
         onClick: () => dispatch(setAuthCode(input.value)),
         className: css.button,
+        loadingSelector: selectAuthorizationLoading,
     });
 
     return button;
@@ -33,15 +42,24 @@ const onInputChange = (callbacks, input, button) => {
 };
 
 const WaitCode = (controlNode) => {
-    const input = renderInput();
+    const callbacks = [];
+    const input = renderInput(callbacks);
     const button = renderButton(input);
     const rootNode = createDiv(null, input.node, button.node);
-    const [destroy, callbacks] = destroyCallbacks(rootNode);
+    const [destroy] = destroyCallbacks(rootNode, callbacks);
     callbacks.push(() => input.destroy());
     callbacks.push(() => button.destroy());
     onInputChange(callbacks, input, button);
 
     controlNode.appendChild(rootNode);
+
+    requestAnimationFrame(() => input.focus());
+
+    callbacks.push(subscribeSelector(selectPhoneCodeInvalid, (phoneCodeInvalid) => {
+        if (phoneCodeInvalid) {
+            input.setInvalid(true);
+        }
+    }));
 
     return {
         node: rootNode,

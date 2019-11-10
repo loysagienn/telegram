@@ -1,18 +1,65 @@
 @import '../common.styl'
 
-.input
+.root
+    position: relative
+    cursor: text;
+    // &:hover
+    //     input 
+    //         border: 1px solid #000000
+    &.invalid
+        .border
+            border-color: $red
+        .title.up
+            color: $red
+
+.border
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    border: 1px solid $grayColor
+    border-radius: 8px
+    &:hover
+        border: 1px solid #000000
+    &.focused
+        border: 2px solid $blueColor
+
+
+.title
+    position: absolute
+    left: 8px
+    top: 12px
+    bottom: 12px
+    padding: 1px 3px
+    border-radius: 8px
+    box-sizing: border-box
+    background-color: $white
+    // background-color: red
+    color: #A4ACB3
+    font-size: 14px
+    line-height: 18px
+    transition: transform 0.2s ease-in-out
+    transform-origin: 0 50%;
+    &.up
+        color: $grayTextColor
+        transform: translate(0, -21px) scale(0.8, 0.8) 
+        &.focused
+            color: $blueColor
+
+.root>.input
+    position: relative
     display: block
     box-sizing: border-box
     width: 100%
-    padding: 12px 10px
+    padding: 13px 11px
     border-radius: 8px
-    border: 1px solid $grayColor
-    outline: 0
     font-size: 14px
-    &:hover
-        border: 1px solid #000000
-    &:focus
-        padding: 11px 9px
-        border: 2px solid $blueColor
+    line-height: 18px
+    outline: 0
+    background-color: transparent
+    border-radius: 8px
+    border: 0;
+    caret-color: $blueColor
     &::placeholder
         color: #A4ACB3

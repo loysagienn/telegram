@@ -30,6 +30,7 @@ module.exports = {
                 // resolvePath,
                 root: './src',
                 alias: {
+                    countries: path.resolve(__dirname, 'src/constants/countries'),
                     // config: path.resolve(__dirname, `src/config/development`),
                 },
             }
