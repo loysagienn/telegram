@@ -1,6 +1,6 @@
 import {dispatch, subscribeSelector} from 'client/store';
-import {setAuthCode} from 'actions';
-import {selectAuthorizationLoading, selectPhoneCodeInvalid} from 'selectors';
+import {checkPassword} from 'actions';
+import {selectAuthorizationLoading, selectPasswordInvalid} from 'selectors';
 import {createDiv, destroyCallbacks, onKeyDown} from 'ui';
 import {ENTER} from 'constants/keyCodes';
 import Input from '../Input';
@@ -9,11 +9,13 @@ import css from './LoginLayout.styl';
 
 
 const renderInput = (callbacks) => {
-    const input = Input({title: 'Code'});
+    const input = Input({title: 'Password'});
+
+    input.inputNode.type = 'password';
 
     callbacks.push(onKeyDown(input.inputNode, ({keyCode}) => {
         if (keyCode === ENTER) {
-            dispatch(setAuthCode(input.value));
+            dispatch(checkPassword(input.value));
         }
     }));
 
@@ -23,7 +25,7 @@ const renderInput = (callbacks) => {
 const renderButton = (input) => {
     const button = Button({
         text: 'NEXT',
-        onClick: () => dispatch(setAuthCode(input.value)),
+        onClick: () => dispatch(checkPassword(input.value)),
         className: css.button,
         loadingSelector: selectAuthorizationLoading,
     });
@@ -41,7 +43,7 @@ const onInputChange = (callbacks, input, button) => {
     }));
 };
 
-const WaitCode = (controlNode) => {
+const WaitPassword = (controlNode) => {
     const callbacks = [];
     const input = renderInput(callbacks);
     const button = renderButton(input);
@@ -55,9 +57,9 @@ const WaitCode = (controlNode) => {
 
     requestAnimationFrame(() => input.focus());
 
-    callbacks.push(subscribeSelector(selectPhoneCodeInvalid, (phoneCodeInvalid) => {
+    callbacks.push(subscribeSelector(selectPasswordInvalid, (phoneCodeInvalid) => {
         if (phoneCodeInvalid) {
-            input.setInvalid(true, 'Invalid Code');
+            input.setInvalid(true, 'Invalid Password');
         }
     }));
 
@@ -68,4 +70,4 @@ const WaitCode = (controlNode) => {
 };
 
 
-export default WaitCode;
+export default WaitPassword;

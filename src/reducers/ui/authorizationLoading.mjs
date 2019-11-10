@@ -1,4 +1,13 @@
-import {SET_AUTH_PHONE, SET_AUTH_CODE, PHONE_NUMBER_INVALID, PHONE_CODE_INVALID, UPDATE} from 'actions';
+import {
+    SET_AUTH_PHONE,
+    SET_AUTH_CODE,
+    CHECK_PASSWORD,
+    REGISTER_USER,
+    PHONE_NUMBER_INVALID,
+    PHONE_CODE_INVALID,
+    PASSWORD_INVALID,
+    UPDATE,
+} from 'actions';
 
 
 export default (state = false, action) => {
@@ -10,11 +19,23 @@ export default (state = false, action) => {
         return true;
     }
 
+    if (action.type === REGISTER_USER) {
+        return true;
+    }
+
+    if (action.type === CHECK_PASSWORD) {
+        return true;
+    }
+
     if (action.type === PHONE_NUMBER_INVALID) {
         return false;
     }
 
     if (action.type === PHONE_CODE_INVALID) {
+        return false;
+    }
+
+    if (action.type === PASSWORD_INVALID) {
         return false;
     }
 

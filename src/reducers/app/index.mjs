@@ -16,6 +16,7 @@ import files from './files';
 import chatOrders from './chatOrders';
 import draftMessages from './draftMessages';
 import usersFullInfo from './usersFullInfo';
+import passwordHint from './passwordHint';
 
 export default combineReducers({
     authorizationState,
@@ -37,4 +38,5 @@ export default combineReducers({
     chatOrders,
     draftMessages,
     usersFullInfo,
+    passwordHint,
 });

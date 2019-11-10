@@ -3,6 +3,8 @@ import {initState, useLocalstorageState} from 'actions';
 import {getUserStore} from './userStore';
 import handleMessage from './handleMessage';
 
+let flag = true;
+
 
 const initConnection = async (connection) => {
     const {userHash} = connection;
@@ -10,6 +12,17 @@ const initConnection = async (connection) => {
     const store = await getUserStore(userHash);
     console.log(`getStore time: ${Date.now() - date}ms`);
 
+    if (flag) {
+        flag = false;
+
+        // store.airgram.api.setPassword({
+        //     newPassword: '1234qwer',
+        //     newHint: 'very simple password',
+        //     setRecoveryEmailAddress: false,
+        // }).then(console.log, console.log);
+
+        // store.airgram.api.logOut();
+    }
 
     const updateActionListener = action => connection.send(action);
     store.on('updateAction', updateActionListener);

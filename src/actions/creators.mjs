@@ -8,6 +8,9 @@ import {
     USE_LOCALSTORAGE_STATE,
     PHONE_NUMBER_INVALID,
     PHONE_CODE_INVALID,
+    REGISTER_USER,
+    CHECK_PASSWORD,
+    PASSWORD_INVALID,
 } from './types';
 
 
@@ -20,3 +23,6 @@ export const batchActions = actions => ({type: BATCH_ACTIONS, actions});
 export const useLocalstorageState = () => ({type: USE_LOCALSTORAGE_STATE});
 export const phoneNumberInvalid = () => ({type: PHONE_NUMBER_INVALID});
 export const phoneCodeInvalid = () => ({type: PHONE_CODE_INVALID});
+export const registerUser = (firstName, lastName) => ({type: REGISTER_USER, firstName, lastName});
+export const checkPassword = password => ({type: CHECK_PASSWORD, password});
+export const passwordInvalid = () => ({type: PASSWORD_INVALID});

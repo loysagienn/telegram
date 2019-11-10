@@ -308,7 +308,7 @@ const WaitPhone = (controlNode) => {
 
     callbacks.push(subscribeSelector(selectPhoneNumberInvalid, (phoneNumberInvalid) => {
         if (phoneNumberInvalid) {
-            phoneInput.setInvalid(true);
+            phoneInput.setInvalid(true, 'Invalid Phone Number');
         }
     }));
 

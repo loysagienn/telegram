@@ -66,7 +66,7 @@ const Input = ({currentValue = '', title: titleText = '', className} = {}) => {
 
     let isInputInvalid = false;
 
-    const setInvalid = (isInvalid) => {
+    const setInvalid = (isInvalid, invalidText) => {
         if (isInvalid === isInputInvalid) {
             return;
         }
@@ -74,7 +74,7 @@ const Input = ({currentValue = '', title: titleText = '', className} = {}) => {
         isInputInvalid = isInvalid;
 
         if (isInvalid) {
-            title.text.textContent = `Invalid ${titleText}`;
+            title.text.textContent = invalidText;
             rootNode.classList.add(css.invalid);
         } else {
             title.text.textContent = titleText;
