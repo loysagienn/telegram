@@ -1,5 +1,6 @@
 import WebSocket from 'ws';
 import EventEmitter from 'events';
+import {WEB_SOCKET_PORT} from 'config';
 
 const server = new EventEmitter();
 
@@ -11,7 +12,6 @@ class Connection extends EventEmitter {
         this.terminated = false;
         this.terminateTimeout = null;
 
-        // todo: memory leak, чистить за собой при закрытии соединения
         wsConnection.on('message', message => this.onMessage(message));
         wsConnection.send('pong');
 
@@ -90,10 +90,8 @@ const onConnect = (wsConnection) => {
     new Connection(wsConnection);
 };
 
-
-// const wss = new ws.Server({noServer: true});
 const wss = new WebSocket.Server({
-    port: 8080,
+    port: WEB_SOCKET_PORT,
 });
 
 wss.on('connection', onConnect);

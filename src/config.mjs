@@ -14,3 +14,5 @@ export const TDLIBJSON_PATH = '/home/vajs/td/tdlib/lib/libtdjson';
 export const LOCALSTORAGE_STATE_KEY = 'app_state';
 
 export const LOCALSTORAGE_USER_HASH_KEY = 'user_hash';
+
+export const WEB_SOCKET_PORT = 8080;

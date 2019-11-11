@@ -7,9 +7,9 @@ import './ws';
 
 const isProductionMode = process.env.NODE_ENV === 'production';
 
-const DEVELOP_STATIC_SERVER_PORT = 3232;
-
 if (!isProductionMode) {
+    const DEVELOP_STATIC_SERVER_PORT = 3232;
+
     const server = new Koa();
 
     server.use(bodyParser());
