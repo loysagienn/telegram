@@ -48,8 +48,6 @@ const initialReducer = (state, action) => {
     if (action.type === USE_LOCALSTORAGE_STATE) {
         activeReducer = regularReducer;
 
-        console.log(localstorageState);
-
         return localstorageState;
     }
 

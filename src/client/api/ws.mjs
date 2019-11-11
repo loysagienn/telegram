@@ -105,7 +105,7 @@ class Ws extends EventEmitter {
         if (this.errorsCount < 3) {
             this.createConnection();
         } else {
-            setTimeout(() => this.createConnection(), Math.min(this.errorsCount * 1000, 20000));
+            setTimeout(() => this.createConnection(), Math.min((this.errorsCount - 2) * 500, 20000));
         }
     }
 }

@@ -71,7 +71,7 @@ const setHelpText = helpText => (authorizationState) => {
     if (authorizationState === 'authorizationStateWaitCode') {
         helpText.textContent = 'We have sent you a message with the code.';
     } else if (authorizationState === 'authorizationStateWaitPhoneNumber') {
-        helpText.textContent = 'Please enter your phone number.';
+        helpText.textContent = 'Please confirm your country and enter your phone number.';
     } else if (authorizationState === 'authorizationStateWaitRegistration') {
         helpText.textContent = 'Enter your name.';
     } else if (authorizationState === 'authorizationStateWaitPassword') {

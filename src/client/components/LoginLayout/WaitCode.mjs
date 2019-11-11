@@ -11,6 +11,8 @@ import css from './LoginLayout.styl';
 const renderInput = (callbacks) => {
     const input = Input({title: 'Code'});
 
+    input.inputNode.type = 'tel';
+
     callbacks.push(onKeyDown(input.inputNode, ({keyCode}) => {
         if (keyCode === ENTER) {
             dispatch(setAuthCode(input.value));

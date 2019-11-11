@@ -257,6 +257,12 @@ const renderPhoneInput = (callbacks) => {
         }
     }));
 
+    callbacks.push(onBlur(input.inputNode, () => {
+        if (input.value.trim() === '+') {
+            input.setValue('');
+        }
+    }));
+
     return input;
 };
 

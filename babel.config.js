@@ -37,6 +37,7 @@ module.exports = (api) => {
     if (isWebpack) {
         Object.assign(moduleResolverOptions.pathAlias, {
             countries: isProductionMode ? 'constants/countriesProduction' : 'constants/countries',
+            emoji: isProductionMode ? 'constants/emojiProduction' : 'constants/emoji',
         });
 
         if (isProductionMode) {

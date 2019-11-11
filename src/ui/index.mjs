@@ -31,6 +31,11 @@ export const onMouseDown = addEvent('mousedown');
 export const onMouseEnter = addEvent('mouseenter');
 export const onError = addEvent('error');
 export const onKeyDown = addEvent('keydown');
+export const onScroll = (element, callback) => {
+    element.addEventListener('scroll', callback, {passive: true});
+
+    return () => element.removeEventListener('scroll', callback);
+};
 
 export const destroyCallbacks = (domNode, callbacks = []) => {
     const destroy = () => {

@@ -1,25 +1,44 @@
 import {STATIC_URL, DATABASE_PATH} from 'config';
 import {subscribeSelector, select, dispatch} from 'client/store';
 import {
-    selectChatLastMessage,
     selectChat,
     selectChatType,
-    selectUser,
-    selectUserStatus,
     selectChatPhotoFile,
     selectUserPhotoFile,
     selectChatReadStatus,
+    selectChatStatus,
+    selectChatOnlineStatus,
+    selectChatName,
 } from 'selectors';
 import {createDiv, createText, createSpan, destroyCallbacks} from 'ui';
-import {getWhen} from 'utils';
 import {loadFile} from 'actions';
 import css from './ChatList.styl';
 import chatItems from './chatItems';
 import {CHAT_HEIGHT} from './constants';
 
+const chatBgColors = [
+    '#FFCDD2',
+    '#E1BEE7',
+    '#C5CAE9',
+    '#B3E5FC',
+    '#B2DFDB',
+    '#DCEDC8',
+    '#FFF9C4',
+    '#FFE0B2',
+    '#FFCCBC',
+    '#D7CCC8',
+];
 
-const setAvatarImage = (node, file) => {
+const getColorByChatId = (chatId) => {
+    const part = Math.round(chatId / 37);
+    const num = part - (Math.floor(part / 10) * 10);
+
+    return chatBgColors[num];
+};
+
+const setAvatarImage = (node, file, chatId) => {
     if (!file) {
+        node.style.backgroundColor = getColorByChatId(chatId);
         return;
     }
 
@@ -39,12 +58,21 @@ const setAvatarImage = (node, file) => {
 };
 
 const renderAvatar = (chatId, callbacks) => {
-    const node = createDiv(css.avatar);
+    const onlineStatusInner = createDiv(css.onlineStatusInner);
+    const onlineStatus = createDiv(css.onlineStatus, onlineStatusInner);
+    const node = createDiv(css.avatar, onlineStatus);
 
     const type = select(selectChatType(chatId));
     const fileSelector = type._ === 'chatTypePrivate' ? selectUserPhotoFile(type.userId) : selectChatPhotoFile(chatId);
 
-    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file)), true);
+    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file, chatId)), true);
+    callbacks.push(subscribeSelector(selectChatOnlineStatus(chatId), (isOnline) => {
+        if (isOnline) {
+            onlineStatus.classList.add(css.visible);
+        } else {
+            onlineStatus.classList.remove(css.visible);
+        }
+    }));
 
     return node;
 };
@@ -53,107 +81,31 @@ const renderName = (chatId, callbacks) => {
     const text = createText();
     const node = createDiv(css.name, text);
 
-    callbacks.push(subscribeSelector(selectChat(chatId), chat => text.textContent = chat.title), true);
+    callbacks.push(subscribeSelector(selectChatName(chatId), (name) => {
+        text.textContent = name;
+    }), true);
 
     return node;
 };
 
-const getUserStatus = (status) => {
-    if (status._ === 'userStatusOnline') {
-        return 'Online';
-    }
-
-    if (status._ === 'userStatusOffline') {
-        return `Was online at ${getWhen(status.wasOnline)}`;
-    }
-
-    if (status._ === 'userStatusRecently') {
-        return 'Was online recently';
-    }
-
-    if (status._ === 'userStatusLastWeek') {
-        return 'Was online last week';
-    }
-
-    if (status._ === 'userStatusLastMonth') {
-        return 'Was online last month';
-    }
-
-    return '';
-};
-
-const renderUserStatus = (userId, text, node, callbacks) => {
-    callbacks.push(subscribeSelector(selectUserStatus(userId), (status) => {
-        if (status._ === 'userStatusOnline') {
-            node.classList.add(css.online);
-        } else {
-            node.classList.remove(css.online);
-        }
-
-        text.textContent = getUserStatus(status);
-    }), true);
-};
-
-const getChatStatus = (content) => {
-    if (content._ === 'messageText') {
-        return content.text.text.substring(0, 50);
-    }
-
-    if (content._ === 'messagePhoto') {
-        if (content.caption) {
-            return `\\u{1f5bc} ${content.caption.text.substring(0, 50)}`;
-        }
-
-        return '\\u{1f5bc}';
-    }
-
-    if (content._ === 'messageVideo') {
-        if (content.caption) {
-            return `\\u{1f4f9} ${content.caption.text.substring(0, 50)}`;
-        }
-
-        return '\\u{1f4f9}';
-    }
-
-    return content._;
-};
-
-const renderChatStatus = (chatId, text, prefixText, callbacks) => {
-    callbacks.push(subscribeSelector(selectChatLastMessage(chatId), (message) => {
-        if (!message) {
-            text.textContent = '';
-
-            return;
-        }
-
-        let prefix = '';
-
-        if (message.senderUserId) {
-            const user = select(selectUser(message.senderUserId));
-
-            if (user && user.firstName) {
-                prefix = `${user.firstName}: `;
-            }
-        }
-
-        prefixText.textContent = prefix;
-        text.textContent = getChatStatus(message.content);
+const renderChatStatus = (chatId, blackText, blueText, grayText, callbacks) => {
+    callbacks.push(subscribeSelector(selectChatStatus(chatId), ({black, blue, gray}) => {
+        blackText.textContent = black || '';
+        blueText.textContent = blue || '';
+        grayText.textContent = gray || '';
     }));
 };
 
 const renderStatus = (chatId, callbacks) => {
-    const prefixText = createText();
-    const prefixNode = createSpan(css.statusPrefix, prefixText);
-    const text = createText();
-    const node = createDiv(css.status, prefixNode, text);
+    const blackText = createText();
+    const blackNode = createSpan(css.statusBlack, blackText);
+    const blueText = createText();
+    const blueNode = createSpan(css.statusBlue, blueText);
+    const grayText = createText();
+    const grayNode = createSpan(css.statusGray, grayText);
+    const node = createDiv(css.status, blackNode, blueNode, grayNode);
 
-    const type = select(selectChatType(chatId));
-
-    if (type._ === 'chatTypePrivate') {
-        renderUserStatus(type.userId, text, node, callbacks);
-    } else {
-        renderChatStatus(chatId, text, prefixText, callbacks);
-    }
+    renderChatStatus(chatId, blackText, blueText, grayText, callbacks);
 
     return node;
 };
@@ -208,7 +160,17 @@ const Chat = (chatId) => {
 
     callbacks.push(() => { delete chatItems[chatId]; });
 
-    const setOrder = index => rootNode.style.transform = `translate(0, ${index * CHAT_HEIGHT}px)`;
+    let currentOrderIndex = null;
+
+    const setOrder = (index) => {
+        if (index === currentOrderIndex) {
+            return;
+        }
+
+        currentOrderIndex = index;
+
+        rootNode.style.transform = `translate(0, ${index * CHAT_HEIGHT}px)`;
+    };
 
     return chatItems[chatId] = {
         node: rootNode,

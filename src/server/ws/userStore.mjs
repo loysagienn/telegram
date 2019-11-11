@@ -21,7 +21,7 @@ class UserStore extends EventEmitter {
         this.reduxStore = createReduxStore();
 
         this.airgram = new Airgram({
-            useTestDc: true,
+            useTestDc: false,
             apiId: 262680,
             apiHash: '177a6b76ea819a88e35525aa0692e850',
             command: TDLIBJSON_PATH,
@@ -147,14 +147,20 @@ const initDbDirectory = async (userHash) => {
 
 export const getUserStore = async (userHash) => {
     if (activeStates[userHash]) {
-        return activeStates[userHash];
+        return {
+            store: activeStates[userHash],
+            fromCache: true,
+        };
     }
 
     const date = Date.now();
     const dbDir = await initDbDirectory(userHash);
     console.log(`initDirectories time: ${Date.now() - date}ms`);
 
-    return new UserStore(userHash, dbDir);
+    return {
+        store: new UserStore(userHash, dbDir),
+        fromCache: false,
+    };
 };
 
 export default UserStore;

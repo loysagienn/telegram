@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "flow": "flow",
-    "start": "export NODE_ENV=production && node ./dist/server/index.js",
+    "start": "export NODE_ENV=production && pm2 start ./dist/server/index.js",
     "start-dev": "export NODE_ENV=development && node ./dist/server/index.js",
     "clear-dist": "rm -rf './dist'",
     "babel": "npm run clear-dist && NODE_ENV=production BABEL_ENV=production babel src --out-dir dist",

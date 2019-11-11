@@ -16,7 +16,9 @@ export const select = selector => selector(getState());
 export const subscribeSelector = (selector, callback, skipIfFalsy) => {
     let currentValue = selector(getState());
 
-    callback(currentValue);
+    if (currentValue || !skipIfFalsy) {
+        callback(currentValue);
+    }
 
     return subscribe(() => {
         const value = selector(getState());

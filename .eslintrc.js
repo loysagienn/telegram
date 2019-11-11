@@ -31,6 +31,7 @@ module.exports = {
                 root: './src',
                 alias: {
                     countries: path.resolve(__dirname, 'src/constants/countries'),
+                    emoji: path.resolve(__dirname, 'src/constants/emoji'),
                     // config: path.resolve(__dirname, `src/config/development`),
                 },
             }

@@ -6,6 +6,7 @@ export * from './user';
 export * from './files';
 export * from './chat';
 export * from './ui';
+export * from './selectChatStatus';
 
 export const selectMainLayout = createSelector(selectAuthorizationState, (authorizationState) => {
     // return 'loading';

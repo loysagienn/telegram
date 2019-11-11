@@ -46,6 +46,26 @@
     background-position: center center
     background-repeat: no-repeat
     background-size: cover
+    .onlineStatus
+        position: absolute
+        left: 36px
+        top: 36px
+        width: 12px
+        height: 12px
+        border-radius: 6px
+        background-color: $white
+        display: none
+        &.visible
+            display: block
+
+        .onlineStatusInner
+            position: absolute
+            left: 2px
+            top: 2px
+            width: 8px
+            height: 8px
+            border-radius: 4px
+            background-color: $greenColor
 
 .desc
     position: absolute
@@ -68,11 +88,12 @@
 
 .status
     font-size: 14px
-    color: $grayTextColor
-    &.online
-        color: $blueTextColor
-    .statusPrefix
+    .statusBlack
         color: $black
+    .statusBlue
+        color: $blueTextColor
+    .statusGray
+        color: $grayTextColor
 
 .meta
     position: absolute
