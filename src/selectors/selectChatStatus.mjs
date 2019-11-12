@@ -32,16 +32,24 @@ export const selectChatName = memoizeSimple(chatId => createSelector(
         if (chat.type._ === 'chatTypePrivate') {
             const user = users[chat.type.userId];
 
+            const isDeleted = user.type._ === 'userTypeDeleted';
+
             if (user && user.firstName) {
+                let name = user.firstName;
+
                 if (user.lastName) {
-                    return `${user.firstName} ${user.lastName}`;
+                    name += ` ${user.lastName}`;
                 }
 
-                return user.firstName;
+                if (isDeleted) {
+                    name += ' (Deleted)';
+                }
+
+                return name;
             }
 
-            if (user.type._ === 'userTypeDeleted') {
-                return 'Deleted User';
+            if (isDeleted) {
+                return 'Deleted Account';
             }
         }
 
@@ -157,6 +165,10 @@ const getChatMessageStatus = (content) => {
         return 'sticker';
     }
 
+    if (content._ === 'messageChatJoinByLink') {
+        return 'joined group via invite link';
+    }
+
     if (content._ === 'messageCall') {
         // console.log(content);
     }
@@ -191,7 +203,11 @@ export const selectChatStatus = memoizeSimple(chatId => createSelector(
 
             if (lastMessageSender) {
                 if (lastMessageSender.firstName) {
-                    black = `${lastMessageSender.firstName}: `;
+                    if (lastMessage.content._ === 'messageChatJoinByLink') {
+                        black = `${lastMessageSender.firstName} `;
+                    } else {
+                        black = `${lastMessageSender.firstName}: `;
+                    }
                 }
             }
 

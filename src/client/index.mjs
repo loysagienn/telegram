@@ -43,3 +43,15 @@ socket.on('message', (message) => {
 });
 
 renderApp();
+
+
+const initTgsPlayer = () => {
+    const playerUrl = 'https://unpkg.com/@lottiefiles/lottie-player@0.2.1/dist/tgs-player.js';
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = playerUrl;
+
+    document.body.appendChild(script);
+};
+
+initTgsPlayer();

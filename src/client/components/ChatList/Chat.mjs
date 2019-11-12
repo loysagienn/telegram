@@ -140,7 +140,7 @@ const renderMeta = (chatId, callbacks) => {
     return node;
 };
 
-const Chat = (chatId) => {
+const Chat = (chatId, chatsContainer) => {
     if (chatId in chatItems) {
         return chatItems[chatId];
     }
@@ -157,12 +157,33 @@ const Chat = (chatId) => {
     const rootNode = createDiv(css.chatWrapper, contentNode);
     const [destroy] = destroyCallbacks(rootNode, callbacks);
 
+    chatsContainer.appendChild(rootNode);
 
     callbacks.push(() => { delete chatItems[chatId]; });
 
     let currentOrderIndex = null;
+    let isVisible = true;
+
+    const hide = () => {
+        if (!isVisible) {
+            return;
+        }
+
+        isVisible = false;
+        rootNode.style.display = 'none';
+    };
+    const show = () => {
+        if (isVisible) {
+            return;
+        }
+
+        isVisible = true;
+        rootNode.style.display = 'block';
+    };
 
     const setOrder = (index) => {
+        show();
+
         if (index === currentOrderIndex) {
             return;
         }
@@ -176,6 +197,8 @@ const Chat = (chatId) => {
         node: rootNode,
         setOrder,
         destroy,
+        hide,
+        show,
     };
 };
 
