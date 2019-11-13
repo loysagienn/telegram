@@ -7,10 +7,16 @@ import {LOCALSTORAGE_STATE_KEY} from 'config';
 let localstorageState = null;
 
 try {
-    const stateStr = localStorage.getItem(LOCALSTORAGE_STATE_KEY);
+    const data = localStorage.getItem(LOCALSTORAGE_STATE_KEY);
 
-    if (stateStr) {
-        localstorageState = JSON.parse(stateStr);
+    if (data) {
+        const {timestamp, state} = JSON.parse(data);
+        const currentTimestamp = Date.now();
+        const timeout = 30 * 60 * 1000; // 30 minutes
+
+        if (timestamp && state && ((timestamp + timeout) > currentTimestamp)) {
+            localstorageState = state;
+        }
     }
 } catch (error) {
     console.log('get state from localstorage error');

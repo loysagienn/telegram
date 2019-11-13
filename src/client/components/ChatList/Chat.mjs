@@ -1,7 +1,6 @@
 import {STATIC_URL, DATABASE_PATH} from 'config';
 import {subscribeSelector, select, dispatch} from 'client/store';
 import {
-    selectChat,
     selectChatType,
     selectChatPhotoFile,
     selectUserPhotoFile,
@@ -10,8 +9,8 @@ import {
     selectChatOnlineStatus,
     selectChatName,
 } from 'selectors';
-import {createDiv, createText, createSpan, destroyCallbacks} from 'ui';
-import {loadFile} from 'actions';
+import {createDiv, createText, createSpan, destroyCallbacks, onClick} from 'ui';
+import {loadFile, setActiveChat} from 'actions';
 import css from './ChatList.styl';
 import chatItems from './chatItems';
 import {CHAT_HEIGHT} from './constants';
@@ -160,6 +159,8 @@ const Chat = (chatId, chatsContainer) => {
     chatsContainer.appendChild(rootNode);
 
     callbacks.push(() => { delete chatItems[chatId]; });
+
+    callbacks.push(onClick(contentNode, () => dispatch(setActiveChat(chatId))));
 
     let currentOrderIndex = null;
     let isVisible = true;

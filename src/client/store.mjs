@@ -39,7 +39,11 @@ export const subscribeSelector = (selector, callback, skipIfFalsy) => {
 
 window.addEventListener('unload', () => {
     console.log('set state to local storage');
-    localStorage.setItem(LOCALSTORAGE_STATE_KEY, JSON.stringify(getState()));
+    const data = {
+        state: getState(),
+        timestamp: Date.now(),
+    };
+    localStorage.setItem(LOCALSTORAGE_STATE_KEY, JSON.stringify(data));
 });
 
 export default store;

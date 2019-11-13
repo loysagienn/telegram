@@ -11,6 +11,7 @@ import {
     REGISTER_USER,
     CHECK_PASSWORD,
     PASSWORD_INVALID,
+    SET_ACTIVE_CHAT,
 } from './types';
 
 
@@ -26,3 +27,4 @@ export const phoneCodeInvalid = () => ({type: PHONE_CODE_INVALID});
 export const registerUser = (firstName, lastName) => ({type: REGISTER_USER, firstName, lastName});
 export const checkPassword = password => ({type: CHECK_PASSWORD, password});
 export const passwordInvalid = () => ({type: PASSWORD_INVALID});
+export const setActiveChat = chatId => ({type: SET_ACTIVE_CHAT, chatId});

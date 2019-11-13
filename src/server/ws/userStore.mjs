@@ -18,6 +18,8 @@ class UserStore extends EventEmitter {
         this.unusedCounter = 0;
         this.authorizationState = null;
 
+        this.updateActions = [];
+
         this.reduxStore = createReduxStore();
 
         this.airgram = new Airgram({
@@ -90,6 +92,10 @@ class UserStore extends EventEmitter {
 
                 if (!isServiceAction) {
                     const action = updateAction(update);
+
+                    action.updateIndex = this.updateActions.length;
+
+                    this.updateActions.push(action);
 
                     dispatch(action);
 

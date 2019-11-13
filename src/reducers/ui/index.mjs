@@ -3,6 +3,7 @@ import authorizationLoading from './authorizationLoading';
 import phoneNumberInvalid from './phoneNumberInvalid';
 import phoneCodeInvalid from './phoneCodeInvalid';
 import passwordInvalid from './passwordInvalid';
+import activeChat from './activeChat';
 
 
 export default combineReducers({
@@ -10,4 +11,5 @@ export default combineReducers({
     phoneNumberInvalid,
     phoneCodeInvalid,
     passwordInvalid,
+    activeChat,
 });

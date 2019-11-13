@@ -11,6 +11,8 @@ export const selectPhoneCodeInvalid = createSelector(selectUI, ({phoneCodeInvali
 
 export const selectPasswordInvalid = createSelector(selectUI, ({passwordInvalid}) => passwordInvalid);
 
+export const selectActiveChatId = createSelector(selectUI, ({activeChat}) => activeChat);
+
 export const selectMonkey = createSelector(
     selectAuthorizationState,
     selectPhoneCodeInvalid,
