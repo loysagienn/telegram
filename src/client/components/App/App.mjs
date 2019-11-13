@@ -1,6 +1,7 @@
 import {subscribeSelector} from 'client/store';
-import {selectMainLayout} from 'selectors';
+import {selectMainLayout, selectLastAction} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
+import {INIT_STATE} from 'actions';
 import LoadingLayout from '../LoadingLayout';
 import LoginLayout from '../LoginLayout';
 import MainLayout from '../MainLayout';
@@ -27,9 +28,17 @@ const App = () => {
     const rootNode = createDiv(css.app);
     const [destroy, callbacks] = destroyCallbacks();
     let content = null;
+    let currentLayout = null;
 
     callbacks.push(subscribeSelector(selectMainLayout, (layout) => {
         content = renderContent(rootNode, layout, content);
+        currentLayout = layout;
+    }));
+
+    callbacks.push(subscribeSelector(selectLastAction, (lastAction) => {
+        if (lastAction.type === INIT_STATE) {
+            content = renderContent(rootNode, currentLayout, content);
+        }
     }));
 
     document.body.appendChild(rootNode);

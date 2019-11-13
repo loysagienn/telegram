@@ -12,11 +12,12 @@ import {
     CHECK_PASSWORD,
     PASSWORD_INVALID,
     SET_ACTIVE_CHAT,
+    LOAD_CHATS,
 } from './types';
 
 
 export const update = upd => ({type: UPDATE, update: upd});
-export const initState = state => ({type: INIT_STATE, state});
+export const initState = params => Object.assign(params, {type: INIT_STATE});
 export const setAuthPhone = phoneNumber => ({type: SET_AUTH_PHONE, phoneNumber});
 export const setAuthCode = code => ({type: SET_AUTH_CODE, code});
 export const loadFile = fileId => ({type: LOAD_FILE, fileId});
@@ -28,3 +29,4 @@ export const registerUser = (firstName, lastName) => ({type: REGISTER_USER, firs
 export const checkPassword = password => ({type: CHECK_PASSWORD, password});
 export const passwordInvalid = () => ({type: PASSWORD_INVALID});
 export const setActiveChat = chatId => ({type: SET_ACTIVE_CHAT, chatId});
+export const loadChats = lastChatOrder => ({type: LOAD_CHATS, lastChatOrder});

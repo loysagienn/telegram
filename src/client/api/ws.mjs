@@ -1,4 +1,5 @@
 import {EventEmitter} from 'utils';
+import {getState} from 'client/store';
 import {WEB_SOCKET_URL} from 'config';
 import {onError} from 'ui';
 import getUserHash from './getUserHash';
@@ -64,7 +65,7 @@ class Ws extends EventEmitter {
             return;
         }
 
-        console.log('message', message);
+        // console.log('message', message);
 
         this.emit('message', message);
     }
@@ -80,8 +81,10 @@ class Ws extends EventEmitter {
             this.queue = [];
             this.errorsCount = 0;
 
+            const {instanceHash, lastUpdateIndex} = getState();
+            this.send({type: 'INIT_USER', userHash, instanceHash, lastUpdateIndex});
+
             queue.forEach(item => this.send(item));
-            this.send({type: 'INIT_USER', userHash});
         };
 
         if (isOpen) {

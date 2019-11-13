@@ -1,36 +1,31 @@
 import {combineReducers} from 'redux';
-import {app, lastAction, ui} from 'reducers';
-import {INIT_STATE, BATCH_ACTIONS, USE_LOCALSTORAGE_STATE} from 'actions';
-import {LOCALSTORAGE_STATE_KEY} from 'config';
+import {app, lastAction, ui, lastUpdateIndex, savedApp, instanceHash} from 'reducers';
+import {INIT_STATE, BATCH_ACTIONS} from 'actions';
+// import {getStateFromLocalstorage} from 'client/localstorage';
 
-
-let localstorageState = null;
-
-try {
-    const data = localStorage.getItem(LOCALSTORAGE_STATE_KEY);
-
-    if (data) {
-        const {timestamp, state} = JSON.parse(data);
-        const currentTimestamp = Date.now();
-        const timeout = 30 * 60 * 1000; // 30 minutes
-
-        if (timestamp && state && ((timestamp + timeout) > currentTimestamp)) {
-            localstorageState = state;
-        }
-    }
-} catch (error) {
-    console.log('get state from localstorage error');
-}
 
 let activeReducer;
 
-const reducer = combineReducers({app, lastAction, ui});
-
-const reduceActions = (state, actions) => actions.reduce((acc, action) => reducer(acc, action), state);
+const reducer = combineReducers({app, lastAction, ui, lastUpdateIndex, savedApp, instanceHash});
 
 const regularReducer = (state, action) => {
     if (action.type === INIT_STATE) {
-        return action.state;
+        activeReducer = regularReducer;
+
+        if (action.useSavedState) {
+            return Object.assign({}, state, {
+                app: state.savedApp || state.app,
+                savedApp: null,
+            });
+        }
+
+        return Object.assign({}, state, {
+            app: action.state.app,
+            savedApp: null,
+            instanceHash: action.instanceHash,
+            lastUpdateIndex: action.lastUpdateIndex,
+            lastAction: action,
+        });
     }
 
     if (!state) {
@@ -38,30 +33,32 @@ const regularReducer = (state, action) => {
     }
 
     if (action.type === BATCH_ACTIONS) {
-        return reduceActions(state, action.actions);
+        return action.actions.reduce((acc, actionItem) => activeReducer(acc, actionItem), state);
     }
 
     return reducer(state, action);
 };
 
-const initialReducer = (state, action) => {
-    if (action.type === INIT_STATE) {
-        activeReducer = regularReducer;
+// const initialReducer = (state, action) => {
+//     if (action.type === INIT_STATE) {
+//         activeReducer = regularReducer;
 
-        return regularReducer(state, action);
-    }
+//         if (action.useSavedState) {
+//             return Object.assign({}, state, {
+//                 app: state.savedApp,
+//                 savedApp: {},
+//             });
+//         }
+//         return Object.assign({}, state, {
+//             app: action.state.app,
+//             savedApp: {},
+//             instanceHash: action.instanceHash,
+//         });
+//     }
 
-    if (action.type === USE_LOCALSTORAGE_STATE) {
-        activeReducer = regularReducer;
+//     return regularReducer(state, action);
+// };
 
-        return localstorageState;
-    }
-
-    localstorageState = regularReducer(localstorageState, action);
-
-    return regularReducer(state, action);
-};
-
-activeReducer = localstorageState ? initialReducer : regularReducer;
+activeReducer = regularReducer;
 
 export default (state, action) => activeReducer(state, action);

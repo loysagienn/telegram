@@ -10,6 +10,19 @@ export const selectChatList = createSelector(selectApp, ({chatList}) => chatList
 
 export const selectChatOrders = createSelector(selectApp, ({chatOrders}) => chatOrders);
 
+export const selectChatOrder = memoizeSimple(chatId => createSelector(
+    selectChatOrders,
+    (chatOrders) => {
+        const chatOrder = chatOrders[chatId];
+
+        if (chatOrder && chatOrder !== '0') {
+            return chatOrder;
+        }
+
+        return null;
+    },
+));
+
 export const selectSortedChatList = createSelector(
     selectChatList,
     selectChatOrders,

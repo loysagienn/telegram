@@ -32,6 +32,10 @@ export const selectChatName = memoizeSimple(chatId => createSelector(
         if (chat.type._ === 'chatTypePrivate') {
             const user = users[chat.type.userId];
 
+            if (!user) {
+                return '';
+            }
+
             const isDeleted = user.type._ === 'userTypeDeleted';
 
             if (user && user.firstName) {
@@ -196,6 +200,16 @@ export const selectChatStatus = memoizeSimple(chatId => createSelector(
             }
 
             return getUserOnlineStatus(userStatus);
+        }
+
+        if (draftMessage) {
+            console.log(draftMessage);
+            if (draftMessage.inputMessageText) {
+                return {
+                    red: 'Draft: ',
+                    gray: draftMessage.inputMessageText.text.text.substring(0, 50),
+                };
+            }
         }
 
         if (lastMessage) {

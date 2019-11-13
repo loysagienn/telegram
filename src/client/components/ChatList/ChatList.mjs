@@ -1,5 +1,6 @@
-import {subscribeSelector} from 'client/store';
-import {selectSortedChatList} from 'selectors';
+import {subscribeSelector, dispatch, select} from 'client/store';
+import {selectSortedChatList, selectChatOrder} from 'selectors';
+import {loadChats} from 'actions';
 import {createDiv, destroyCallbacks, onScroll} from 'ui';
 import {throttle} from 'utils';
 import css from './ChatList.styl';
@@ -8,6 +9,18 @@ import Chat from './Chat';
 import {CHAT_HEIGHT} from './constants';
 
 
+let lastLoadChatsCount = 0;
+
+const throttledLoadChats = (lastChatOrder, chatsCount) => {
+    if (chatsCount === lastLoadChatsCount) {
+        return;
+    }
+
+    lastLoadChatsCount = chatsCount;
+
+    dispatch(loadChats(lastChatOrder));
+};
+
 const destroyChatItems = () => Object.keys(chatItems).forEach(key => chatItems[key].destroy());
 
 const renderList = (chatList, chatsContainer, rootNode, previousItems) => {
@@ -15,6 +28,22 @@ const renderList = (chatList, chatsContainer, rootNode, previousItems) => {
 
     const top = rootNode.scrollTop;
     const bottom = window.innerHeight + top;
+
+    if (rootNode.scrollHeight > 0 && rootNode.scrollHeight - bottom < 1000) {
+        let lastChatOrder = null;
+        let index = chatList.length - 1;
+
+        while (index > 0 && lastChatOrder === null) {
+            lastChatOrder = select(selectChatOrder(chatList[index]));
+
+            index--;
+        }
+
+        if (lastChatOrder) {
+            throttledLoadChats(lastChatOrder, chatList.length);
+        }
+    }
+
     const start = Math.max(0, Math.round((top / CHAT_HEIGHT) - 10));
     const end = Math.min(chatList.length - 1, Math.round((bottom / CHAT_HEIGHT) + 10));
 

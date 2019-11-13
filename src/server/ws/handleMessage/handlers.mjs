@@ -49,6 +49,18 @@ const checkPassword = async (store, message, connection) => {
     return result;
 };
 
+const loadChats = async (store, message) => {
+    const {lastChatOrder} = message;
+
+    // const maxOffset = BigInt('9223372036854775807');
+    // console.log(String(maxOffset - BigInt(chatsCount)));
+
+    return store.airgram.api.getChats({
+        offsetOrder: lastChatOrder,
+        limit: 10,
+    });
+};
+
 const handlers = {
     SET_AUTH_PHONE: setAuthPhone,
     SET_AUTH_CODE: setAuthCode,
@@ -64,6 +76,8 @@ const handlers = {
             limit: 0,
         });
     },
+
+    LOAD_CHATS: loadChats,
 
     // GET_CHATS: (userDb, message) => {
     //     userDb.airgram.api.getChats({offsetOrder: '9223372036854775807', limit: 1})

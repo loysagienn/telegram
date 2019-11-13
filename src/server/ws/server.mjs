@@ -63,6 +63,8 @@ class Connection extends EventEmitter {
 
         if (message.type === 'INIT_USER') {
             this.userHash = message.userHash;
+            this.lastUpdateIndex = message.lastUpdateIndex;
+            this.instanceHash = message.instanceHash;
 
             console.log(`create ws connection, user hash: ${message.userHash}`);
 

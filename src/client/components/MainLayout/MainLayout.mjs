@@ -15,7 +15,7 @@ const renderChatList = (callbacks, contentNode) => {
 };
 
 const renderMessages = (callbacks, contentNode) => {
-    let currentChat = null;
+    const currentChat = null;
 
     callbacks.push(subscribeSelector(selectActiveChatId, (chatId) => {
         if (currentChat) {
@@ -23,7 +23,7 @@ const renderMessages = (callbacks, contentNode) => {
         }
 
         if (chatId) {
-            currentChat = ChatMessages(chatId, contentNode);
+            // currentChat = ChatMessages(chatId, contentNode);
         }
     }));
 };

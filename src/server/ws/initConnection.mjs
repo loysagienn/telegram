@@ -3,29 +3,18 @@ import {initState, useLocalstorageState} from 'actions';
 import {getUserStore} from './userStore';
 import handleMessage from './handleMessage';
 
-let flag = true;
-
 
 const initConnection = async (connection) => {
-    const {userHash} = connection;
+    const {userHash, lastUpdateIndex, instanceHash} = connection;
     const date = Date.now();
     const {store, fromCache} = await getUserStore(userHash);
     console.log(`getStore time: ${Date.now() - date}ms`);
-
-    if (flag) {
-        flag = false;
-
-        // store.airgram.api.logOut();
-    }
-
-    const updateActionListener = action => connection.send(action);
-    store.on('updateAction', updateActionListener);
 
     const handleUpdateAuthorizationState = (authorizationState) => {
         if (authorizationState === 'authorizationStateReady') {
             store.airgram.api.getChats({
                 offsetOrder: '9223372036854775807',
-                limit: 3,
+                limit: 10,
             });
         }
     };
@@ -35,22 +24,45 @@ const initConnection = async (connection) => {
     connection.on('message', handleMessageListener);
 
     connection.once('terminate', () => {
-        connection.off('message', handleMessageListener);
-        store.off('updateAction', updateActionListener);
         store.off('updateAuthorizationState', handleUpdateAuthorizationState);
+        connection.off('message', handleMessageListener);
     });
 
     const init = (authorizationState) => {
         console.log(`init user ${userHash}`);
-        // если чувак залогинен, инишиал стейт может быть большой, ехать будет долго,
-        // но клиент мог сохранить стейт, который был до этого, в локалсторадж,
-        // и тут мы ему говорим, что чувак все еще заголинен и можно показывать стейт из локалстораджа
-        // эта вся мутотень для того чтобы сэкономить пол секунды на инишиал загрузке
-        if (authorizationState === 'authorizationStateReady' && fromCache) {
-            connection.send(useLocalstorageState());
+
+        const canFastUpdate = (
+            lastUpdateIndex &&
+            instanceHash === store.instanceHash &&
+            authorizationState === 'authorizationStateReady' &&
+            (store.updateActions.length - lastUpdateIndex) < 1000
+        );
+
+        console.log('canFastUpdate', canFastUpdate);
+        console.log('lastUpdateIndex', lastUpdateIndex);
+
+        if (canFastUpdate) {
+            connection.send(initState({
+                useSavedState: true,
+            }));
+
+            for (let i = lastUpdateIndex + 1; i < store.updateActions.length; i++) {
+                connection.send(store.updateActions[i]);
+            }
+        } else {
+            connection.send(initState({
+                state: store.reduxStore.getState(),
+                instanceHash: store.instanceHash,
+                lastUpdateIndex: store.updateActions.length - 1,
+            }));
         }
 
-        connection.send(initState(store.reduxStore.getState()));
+        const updateActionListener = action => connection.send(action);
+        store.on('updateAction', updateActionListener);
+
+        connection.once('terminate', () => {
+            store.off('updateAction', updateActionListener);
+        });
     };
 
     if (store.authorizationState) {

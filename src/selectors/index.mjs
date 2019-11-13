@@ -36,3 +36,4 @@ export const selectOptions = createSelector(selectApp, ({options}) => options);
 
 export const selectMyId = createSelector(selectOptions, ({my_id}) => my_id || null);
 
+export const selectLastUpdateIndex = ({lastUpdateIndex}) => lastUpdateIndex;

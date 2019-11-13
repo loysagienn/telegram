@@ -64,7 +64,7 @@ const renderAvatar = (chatId, callbacks) => {
     const type = select(selectChatType(chatId));
     const fileSelector = type._ === 'chatTypePrivate' ? selectUserPhotoFile(type.userId) : selectChatPhotoFile(chatId);
 
-    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file, chatId)), true);
+    callbacks.push(subscribeSelector(fileSelector, file => setAvatarImage(node, file, chatId)));
     callbacks.push(subscribeSelector(selectChatOnlineStatus(chatId), (isOnline) => {
         if (isOnline) {
             onlineStatus.classList.add(css.visible);
@@ -82,15 +82,16 @@ const renderName = (chatId, callbacks) => {
 
     callbacks.push(subscribeSelector(selectChatName(chatId), (name) => {
         text.textContent = name;
-    }), true);
+    }, true));
 
     return node;
 };
 
-const renderChatStatus = (chatId, blackText, blueText, grayText, callbacks) => {
-    callbacks.push(subscribeSelector(selectChatStatus(chatId), ({black, blue, gray}) => {
+const renderChatStatus = (chatId, blackText, blueText, redText, grayText, callbacks) => {
+    callbacks.push(subscribeSelector(selectChatStatus(chatId), ({black, blue, red, gray}) => {
         blackText.textContent = black || '';
         blueText.textContent = blue || '';
+        redText.textContent = red || '';
         grayText.textContent = gray || '';
     }));
 };
@@ -100,11 +101,13 @@ const renderStatus = (chatId, callbacks) => {
     const blackNode = createSpan(css.statusBlack, blackText);
     const blueText = createText();
     const blueNode = createSpan(css.statusBlue, blueText);
+    const redText = createText();
+    const redNode = createSpan(css.statusRed, redText);
     const grayText = createText();
     const grayNode = createSpan(css.statusGray, grayText);
-    const node = createDiv(css.status, blackNode, blueNode, grayNode);
+    const node = createDiv(css.status, blackNode, blueNode, redNode, grayNode);
 
-    renderChatStatus(chatId, blackText, blueText, grayText, callbacks);
+    renderChatStatus(chatId, blackText, blueText, redText, grayText, callbacks);
 
     return node;
 };

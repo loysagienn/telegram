@@ -37,7 +37,28 @@ export const onScroll = (element, callback) => {
     return () => element.removeEventListener('scroll', callback);
 };
 
+// class Callbacks extends Array {
+//     constructor(...args) {
+//         super(...args);
+
+//         this.forEach((item) => {
+//             if (typeof item !== 'function') {
+//                 console.trace();
+//             }
+//         });
+//     }
+//     push(item) {
+//         console.log('push item', typeof item);
+//         if (typeof item !== 'function') {
+//             console.trace();
+//         }
+
+//         super.push(item);
+//     }
+// }
+
 export const destroyCallbacks = (domNode, callbacks = []) => {
+    // const callbacks = new Callbacks(...callbacksArgs);
     const destroy = () => {
         if (domNode && domNode.parentNode) {
             domNode.parentNode.removeChild(domNode);

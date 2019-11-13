@@ -1,7 +1,8 @@
 import {promises as fs} from 'fs';
-import {DATABASE_PATH, TDLIBJSON_PATH, FILES_PATH} from 'config';
+import {DATABASE_PATH, TDLIBJSON_PATH} from 'config';
 import EventEmitter from 'events';
 import {Airgram} from 'airgram';
+import {generateRandomString} from 'utils';
 
 import {update as updateAction} from 'actions';
 import createReduxStore from './createReduxStore';
@@ -17,7 +18,7 @@ class UserStore extends EventEmitter {
         this.terminated = false;
         this.unusedCounter = 0;
         this.authorizationState = null;
-
+        this.instanceHash = generateRandomString(15);
         this.updateActions = [];
 
         this.reduxStore = createReduxStore();
@@ -67,7 +68,7 @@ class UserStore extends EventEmitter {
             this.unusedCounter = 0;
         }
 
-        if (this.unusedCounter > 10) {
+        if (this.unusedCounter > 30) {
             this.terminate();
         } else {
             setTimeout(() => this.terminateIfUnused(), 60 * 1000);
