@@ -12,10 +12,32 @@ export const MONTH_NAMES_GENITIVE = [
 
 export const getWhen = (timestamp) => {
     const date = getDate(timestamp);
+    const today = new Date();
 
-    const time = `${date.getHours()}:${date.getMinutes()}`;
+    const timeDiff = today.getTime() - date.getTime();
 
-    return time;
+    const halfDay = 12 * 60 * 60 * 1000;
+
+    if (timeDiff < halfDay || (timeDiff < halfDay * 2 && date.getDay() === today.getDay())) {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        const when = `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
+
+        return {
+            when,
+            type: 'time',
+        };
+    }
+
+    const month = date.getMonth() + 1;
+
+    const when = `${date.getDate()}.${month < 10 ? `0${month}` : month}.${date.getFullYear() % 2000}`;
+
+    return {
+        when,
+        type: 'date',
+    };
 
     // const month = date.getMonth();
     // const monthDay = date.getDate();

@@ -26,7 +26,7 @@ export const selectChatOrder = memoizeSimple(chatId => createSelector(
 export const selectSortedChatList = createSelector(
     selectChatList,
     selectChatOrders,
-    (chatList, orders) => chatList.slice().sort((id1, id2) => {
+    (chatList, orders) => chatList.filter(id => orders[id] && orders[id] !== '0').sort((id1, id2) => {
         if (!orders[id2]) {
             if (!orders[id1]) {
                 return 0;
@@ -88,3 +88,36 @@ export const selectReadStatus = createSelector(selectApp, ({chatReadStatus}) => 
 export const selectChatReadStatus = memoizeSimple(
     chatId => createSelector(selectReadStatus, readStatus => (readStatus[chatId] || null)),
 );
+
+export const selectNotificationSettings = createSelector(selectApp, ({notificationSettings}) => notificationSettings);
+
+export const selectChatNotificationSettings = memoizeSimple(chatId => createSelector(
+    selectNotificationSettings,
+    notificationSettings => (notificationSettings[chatId] || null),
+));
+
+export const selectChatIsMute = memoizeSimple(chatId => createSelector(
+    selectChat(chatId),
+    selectChatNotificationSettings(chatId),
+    (chat, notificationSettings) => {
+        if (!notificationSettings) {
+            return false;
+        }
+
+        if (notificationSettings.useDefaultMuteFor) {
+            return chat.defaultDisableNotification;
+        }
+
+        return true;
+    },
+));
+
+export const selectChatMeta = memoizeSimple(chatId => createSelector(
+    selectChatIsMute(chatId),
+    selectChatReadStatus(chatId),
+    (isMute, readStatus) => {
+        const unreadCount = readStatus ? readStatus.unreadCount : 0;
+
+        return {isMute, unreadCount};
+    },
+));

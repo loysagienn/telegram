@@ -1,12 +1,14 @@
 import {STATIC_URL, DATABASE_PATH} from 'config';
 import {subscribeSelector, select, dispatch} from 'client/store';
+import {getWhen} from 'utils';
 import {
     selectChatType,
     selectChatPhotoFile,
     selectUserPhotoFile,
-    selectChatReadStatus,
+    selectChatMeta,
     selectChatStatus,
     selectChatOnlineStatus,
+    selectChatLastMessage,
     selectChatName,
 } from 'selectors';
 import {createDiv, createText, createSpan, destroyCallbacks, onClick} from 'ui';
@@ -116,13 +118,7 @@ const renderUnreadCount = (chatId, callbacks) => {
     const unreadCountText = createText();
     const node = createDiv(css.unreadCount, unreadCountText);
 
-    callbacks.push(subscribeSelector(selectChatReadStatus(chatId), (readStatus) => {
-        if (!readStatus) {
-            return;
-        }
-
-        const {unreadCount} = readStatus;
-
+    callbacks.push(subscribeSelector(selectChatMeta(chatId), ({unreadCount, isMute}) => {
         unreadCountText.textContent = unreadCount;
 
         if (unreadCount) {
@@ -130,14 +126,33 @@ const renderUnreadCount = (chatId, callbacks) => {
         } else {
             node.classList.remove(css.visible);
         }
+
+        if (isMute) {
+            node.classList.add(css.isMute);
+        } else {
+            node.classList.remove(css.isMute);
+        }
     }));
 
     return node;
 };
 
+const renderTime = (chatId, callbacks) => {
+    const timeText = createText();
+    const timeNode = createDiv(css.lastMessageTime, timeText);
+
+    callbacks.push(subscribeSelector(selectChatLastMessage(chatId), (lastMessage) => {
+        const {when} = getWhen(lastMessage.date);
+        timeText.textContent = when;
+    }, true));
+
+    return timeNode;
+};
+
 const renderMeta = (chatId, callbacks) => {
     const unreadCountNode = renderUnreadCount(chatId, callbacks);
-    const node = createDiv(css.meta, unreadCountNode);
+    const timeNode = renderTime(chatId, callbacks);
+    const node = createDiv(css.meta, timeNode, unreadCountNode);
 
     return node;
 };

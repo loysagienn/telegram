@@ -4,6 +4,7 @@ import {image, video} from 'emoji';
 import {selectUsers, selectUserStatuses} from './user';
 import {
     selectChat,
+    selectChatAction,
     selectChatLastMessage,
     selectChatDraftMessage,
 } from './chat';
@@ -18,6 +19,18 @@ export const selectUserByChat = memoizeSimple(chatId => createSelector(
         }
 
         return users[chat.type.userId] || null;
+    },
+));
+
+export const selectChatActionUser = memoizeSimple(chatId => createSelector(
+    selectChatAction(chatId),
+    selectUsers,
+    (action, users) => {
+        if (action && action.userId) {
+            return users[action.userId];
+        }
+
+        return null;
     },
 ));
 
@@ -106,7 +119,8 @@ const getUserOnlineStatus = (status) => {
     }
 
     if (status._ === 'userStatusOffline') {
-        return {gray: `last seen at ${getWhen(status.wasOnline)}`};
+        const {when, type} = getWhen(status.wasOnline);
+        return {gray: `last seen ${type === 'time' ? `at ${when}` : when}`};
     }
 
     if (status._ === 'userStatusRecently') {
@@ -187,10 +201,25 @@ export const selectChatStatus = memoizeSimple(chatId => createSelector(
     selectChatDraftMessage(chatId),
     selectUserByChat(chatId),
     selectUserStatusByChat(chatId),
-    (chat, lastMessage, lastMessageSender, draftMessage, user, userStatus) => {
+    selectChatAction(chatId),
+    selectChatActionUser(chatId),
+    (chat, lastMessage, lastMessageSender, draftMessage, user, userStatus, chatAction, actionUser) => {
+        if (draftMessage) {
+            if (draftMessage.inputMessageText) {
+                return {
+                    red: 'Draft: ',
+                    gray: draftMessage.inputMessageText.text.text.substring(0, 50),
+                };
+            }
+        }
+
         if (chat.type._ === 'chatTypePrivate') {
-            if (!user) {
-                return {};
+            if (chatAction) {
+                const {action} = chatAction;
+
+                if (action._ === 'chatActionTyping') {
+                    return {gray: 'typing...'};
+                }
             }
 
             if (lastMessage) {
@@ -202,12 +231,14 @@ export const selectChatStatus = memoizeSimple(chatId => createSelector(
             return getUserOnlineStatus(userStatus);
         }
 
-        if (draftMessage) {
-            console.log(draftMessage);
-            if (draftMessage.inputMessageText) {
+        if (chatAction) {
+            const {action} = chatAction;
+
+            if (action._ === 'chatActionTyping') {
+                const actionUserName = actionUser ? `${actionUser.firstName} is ` : '';
+
                 return {
-                    red: 'Draft: ',
-                    gray: draftMessage.inputMessageText.text.text.substring(0, 50),
+                    gray: `${actionUserName}typing...`,
                 };
             }
         }
