@@ -18,6 +18,7 @@ import draftMessages from './draftMessages';
 import usersFullInfo from './usersFullInfo';
 import passwordHint from './passwordHint';
 import notificationSettings from './notificationSettings';
+import onlineMemberCount from './onlineMemberCount';
 
 export default combineReducers({
     authorizationState,
@@ -41,4 +42,5 @@ export default combineReducers({
     usersFullInfo,
     passwordHint,
     notificationSettings,
+    onlineMemberCount,
 });

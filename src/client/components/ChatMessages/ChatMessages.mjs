@@ -1,18 +1,19 @@
 import {createDiv, createText, destroyCallbacks} from 'ui';
 import css from './ChatMessages.styl';
+import Header from './Header';
 
-const componentsItems = {};
 
-const ChatMessages = (chatId, rootNode) => {
-    if (chatId in componentsItems) {
-        const item = componentsItems[chatId];
+const ChatMessages = (chatId, rootNode, chatsItems) => {
+    if (chatId in chatsItems) {
+        const item = chatsItems[chatId];
 
         item.show();
 
         return item;
     }
 
-    const node = createDiv(css.root, createText(`chat ${chatId} messages`));
+    const header = Header(chatId);
+    const node = createDiv(css.root, header.node);
     const [destroy] = destroyCallbacks(node);
 
     rootNode.appendChild(node);
@@ -20,7 +21,7 @@ const ChatMessages = (chatId, rootNode) => {
     const show = () => node.style.display = 'block';
     const hide = () => node.style.display = 'none';
 
-    return componentsItems[chatId] = {
+    return chatsItems[chatId] = {
         node,
         destroy,
         show,

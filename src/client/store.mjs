@@ -1,5 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import {LOCALSTORAGE_STATE_KEY} from 'config';
+import {selectChat} from 'selectors';
 import initActionHandlers from 'actionHandlers';
 import {getStateFromLocalstorage} from 'client/localstorage';
 import reducer from './reducer';
@@ -7,12 +8,17 @@ import reducer from './reducer';
 const {__REDUX_DEVTOOLS_EXTENSION_COMPOSE__: composeEnhancers = compose} = window;
 
 const getInitialState = () => {
-    const {app, lastUpdateIndex, instanceHash} = getStateFromLocalstorage();
+    const localstorageState = getStateFromLocalstorage();
+    const {app, ui, lastUpdateIndex, instanceHash} = localstorageState;
+    const activeChat = (ui.activeChat && selectChat(ui.activeChat)(localstorageState)) ? ui.activeChat : null;
 
     return {
         savedApp: app,
         lastUpdateIndex,
         instanceHash,
+        ui: {
+            activeChat,
+        },
     };
 };
 
@@ -29,7 +35,15 @@ export const {dispatch, getState, subscribe} = store;
 export const select = selector => selector(getState());
 
 export const subscribeSelector = (selector, callback, skipIfFalsy) => {
-    let currentValue = selector(getState());
+    let currentValue;
+
+    try {
+        currentValue = selector(getState());
+    } catch (error) {
+        console.log('selector error!!!');
+        console.log(error);
+    }
+
     let isUnsubscribed = false;
 
     if (currentValue || !skipIfFalsy) {
@@ -41,7 +55,16 @@ export const subscribeSelector = (selector, callback, skipIfFalsy) => {
             return;
         }
 
-        const value = selector(getState());
+        let value;
+
+        try {
+            value = selector(getState());
+        } catch (error) {
+            console.log('selector error!!!');
+            console.log(error);
+
+            return;
+        }
 
         if (value === currentValue) {
             return;

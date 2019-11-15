@@ -11,6 +11,10 @@ subscribe(() => {
     const handler = actionHandlers[lastActionType];
 
     if (handler) {
-        socket.send(handler(state));
+        const action = handler(state);
+
+        if (action) {
+            socket.send(action);
+        }
     }
 });

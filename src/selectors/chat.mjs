@@ -51,6 +51,13 @@ export const selectChatAction = memoizeSimple(
     chatId => createSelector(selectChatActions, chatActions => (chatActions[chatId] || null)),
 );
 
+export const selectSupergroups = createSelector(selectApp, ({supergroups}) => supergroups);
+
+export const selectSupergroup = memoizeSimple(supergroupId => createSelector(
+    selectSupergroups,
+    supergroups => supergroups[supergroupId],
+));
+
 
 export const selectLastMessages = createSelector(selectApp, ({lastMessages}) => lastMessages);
 
@@ -94,6 +101,13 @@ export const selectNotificationSettings = createSelector(selectApp, ({notificati
 export const selectChatNotificationSettings = memoizeSimple(chatId => createSelector(
     selectNotificationSettings,
     notificationSettings => (notificationSettings[chatId] || null),
+));
+
+export const selectOnlineMemberCount = createSelector(selectApp, ({onlineMemberCount}) => onlineMemberCount);
+
+export const selectChatOnlineMemberCount = memoizeSimple(chatId => createSelector(
+    selectOnlineMemberCount,
+    onlineMemberCount => onlineMemberCount[chatId] || null,
 ));
 
 export const selectChatIsMute = memoizeSimple(chatId => createSelector(

@@ -7,6 +7,8 @@ import {
     selectChatAction,
     selectChatLastMessage,
     selectChatDraftMessage,
+    selectSupergroups,
+    selectChatOnlineMemberCount,
 } from './chat';
 
 
@@ -14,11 +16,23 @@ export const selectUserByChat = memoizeSimple(chatId => createSelector(
     selectChat(chatId),
     selectUsers,
     (chat, users) => {
-        if (chat.type._ !== 'chatTypePrivate') {
-            return null;
+        if (chat && chat.type._ === 'chatTypePrivate') {
+            return users[chat.type.userId] || null;
         }
 
-        return users[chat.type.userId] || null;
+        return null;
+    },
+));
+
+export const selectSupergroupByChat = memoizeSimple(chatId => createSelector(
+    selectChat(chatId),
+    selectSupergroups,
+    (chat, supergroups) => {
+        if (chat && chat.type.supergroupId) {
+            return supergroups[chat.type.supergroupId];
+        }
+
+        return null;
     },
 ));
 
@@ -38,6 +52,10 @@ export const selectChatName = memoizeSimple(chatId => createSelector(
     selectChat(chatId),
     selectUsers,
     (chat, users) => {
+        if (!chat) {
+            return '';
+        }
+
         if (chat.title) {
             return chat.title;
         }
@@ -78,11 +96,11 @@ export const selectUserStatusByChat = memoizeSimple(chatId => createSelector(
     selectChat(chatId),
     selectUserStatuses,
     (chat, statuses) => {
-        if (chat.type._ !== 'chatTypePrivate') {
-            return null;
+        if (chat && chat.type._ === 'chatTypePrivate') {
+            return statuses[chat.type.userId] || null;
         }
 
-        return statuses[chat.type.userId] || null;
+        return null;
     },
 ));
 
@@ -140,12 +158,12 @@ const getUserOnlineStatus = (status) => {
 
 const getChatMessageStatus = (content) => {
     if (content._ === 'messageText') {
-        return content.text.text.substring(0, 50);
+        return content.text.text.substring(0, 100);
     }
 
     if (content._ === 'messagePhoto') {
         if (content.caption) {
-            return `${image} ${content.caption.text.substring(0, 50)}`;
+            return `${image} ${content.caption.text.substring(0, 100)}`;
         }
 
         return image;
@@ -153,7 +171,7 @@ const getChatMessageStatus = (content) => {
 
     if (content._ === 'messageVideo') {
         if (content.caption) {
-            return `${video} ${content.caption.text.substring(0, 50)}`;
+            return `${video} ${content.caption.text.substring(0, 100)}`;
         }
 
         return 'video';
@@ -194,6 +212,70 @@ const getChatMessageStatus = (content) => {
     return content._;
 };
 
+export const selectChatHeaderStatus = memoizeSimple(chatId => createSelector(
+    selectChat(chatId),
+    selectUserByChat(chatId),
+    selectUserStatusByChat(chatId),
+    selectChatAction(chatId),
+    selectChatActionUser(chatId),
+    selectSupergroupByChat(chatId),
+    selectChatOnlineMemberCount(chatId),
+    (chat, user, userStatus, chatAction, actionUser, supergroup, onlineMembersCount) => {
+        if (!chat) {
+            return {};
+        }
+
+        if (chat.type._ === 'chatTypePrivate') {
+            if (chatAction) {
+                const {action} = chatAction;
+
+                if (action._ === 'chatActionTyping') {
+                    return {gray: 'typing...'};
+                }
+            }
+
+            return getUserOnlineStatus(userStatus);
+        }
+
+        if (chatAction) {
+            const {action} = chatAction;
+
+            if (action._ === 'chatActionTyping') {
+                const actionUserName = actionUser ? `${actionUser.firstName} is ` : '';
+
+                return {
+                    gray: `${actionUserName}typing...`,
+                };
+            }
+        }
+
+        if (chat.type._ === 'chatTypeSupergroup') {
+            if (chat.type.isChannel) {
+                if (supergroup && supergroup.memberCount) {
+                    return {gray: `${supergroup.memberCount} subscribers`};
+                }
+
+                return {};
+            }
+
+            if (supergroup && supergroup.memberCount) {
+                if (onlineMembersCount) {
+                    return {gray: `${supergroup.memberCount} members, ${onlineMembersCount} online`};
+                }
+
+                return {gray: `${supergroup.memberCount} members`};
+            }
+        }
+        console.log(supergroup);
+
+
+        // selectChatOnlineMemberCount
+        console.log(chat);
+
+        return {};
+    },
+));
+
 export const selectChatStatus = memoizeSimple(chatId => createSelector(
     selectChat(chatId),
     selectChatLastMessage(chatId),
@@ -208,7 +290,7 @@ export const selectChatStatus = memoizeSimple(chatId => createSelector(
             if (draftMessage.inputMessageText) {
                 return {
                     red: 'Draft: ',
-                    gray: draftMessage.inputMessageText.text.text.substring(0, 50),
+                    gray: draftMessage.inputMessageText.text.text.substring(0, 100),
                 };
             }
         }

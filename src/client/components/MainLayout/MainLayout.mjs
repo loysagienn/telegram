@@ -17,6 +17,7 @@ const renderChatList = (callbacks, contentNode) => {
 
 const renderMessages = (callbacks, contentNode) => {
     let currentChat = null;
+    const chatsItems = {};
 
     callbacks.push(subscribeSelector(selectActiveChatId, (chatId) => {
         if (currentChat) {
@@ -24,9 +25,11 @@ const renderMessages = (callbacks, contentNode) => {
         }
 
         if (chatId) {
-            currentChat = ChatMessages(chatId, contentNode);
+            currentChat = ChatMessages(chatId, contentNode, chatsItems);
         }
     }));
+
+    callbacks.push(() => Object.keys(chatsItems).forEach(key => chatsItems[key].destroy()));
 };
 
 const MainLayout = (parentNode) => {

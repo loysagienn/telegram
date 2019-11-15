@@ -6,3 +6,54 @@
     bottom: 0
     left: 400px
     right: 0
+    +maxWidth(1000px)
+        left: 40%
+
+.header
+    position: absolute
+    left: 0
+    right: 0
+    top: 0
+    box-sizing: border-box
+    height: 67px
+    border-bottom: 1px solid $grayBorderColor
+    background-color: white
+
+.avatar
+    position: absolute
+    left: 20px
+    top: 8px
+    width: 50px
+    height: 50px
+    border-radius: 25px
+    background-color: $grayAvatarBgColor
+    background-position: center center
+    background-repeat: no-repeat
+    background-size: cover
+
+.chatName
+    position: absolute
+    left: 78px
+    top: 11px
+    font-size: 14px
+    line-height: 22px
+    font-weight: 500
+
+.chatStatus
+    position: absolute
+    left: 78px
+    top: 33px
+    line-height: 22px
+    font-size: 14px
+    max-width: 50%
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+    .statusBlack
+        color: $black
+    .statusBlue
+        color: $blueTextColor
+    .statusRed
+        color: $red
+    .statusGray
+        color: $grayTextColor

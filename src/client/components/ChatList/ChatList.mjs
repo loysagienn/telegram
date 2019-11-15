@@ -50,6 +50,8 @@ const renderList = (chatList, chatsContainer, rootNode, previousItems, currentHe
 
     const start = Math.max(0, Math.round((top / CHAT_HEIGHT) - 10));
     const end = Math.min(chatList.length - 1, Math.round((bottom / CHAT_HEIGHT) + 10));
+    // const start = 0;
+    // const end = chatList.length - 1;
 
     const nextItems = {};
 

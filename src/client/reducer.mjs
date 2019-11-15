@@ -4,36 +4,32 @@ import {INIT_STATE, BATCH_ACTIONS} from 'actions';
 // import {getStateFromLocalstorage} from 'client/localstorage';
 
 
-let activeReducer;
-
 const reducer = combineReducers({app, lastAction, ui, lastUpdateIndex, savedApp, instanceHash});
 
 const regularReducer = (state, action) => {
-    if (action.type === INIT_STATE) {
-        activeReducer = regularReducer;
+    if (action.type === BATCH_ACTIONS) {
+        return action.actions.reduce((acc, actionItem) => regularReducer(acc, actionItem), state);
+    }
 
+    if (action.type === INIT_STATE) {
         if (action.useSavedState) {
-            return Object.assign({}, state, {
+            return reducer(Object.assign({}, state, {
                 app: state.savedApp || state.app,
                 savedApp: null,
-            });
+            }), action);
         }
 
-        return Object.assign({}, state, {
+        return reducer(Object.assign({}, state, {
             app: action.state.app,
             savedApp: null,
             instanceHash: action.instanceHash,
             lastUpdateIndex: action.lastUpdateIndex,
             lastAction: action,
-        });
+        }), action);
     }
 
     if (!state) {
         state = {};
-    }
-
-    if (action.type === BATCH_ACTIONS) {
-        return action.actions.reduce((acc, actionItem) => activeReducer(acc, actionItem), state);
     }
 
     return reducer(state, action);
@@ -59,6 +55,4 @@ const regularReducer = (state, action) => {
 //     return regularReducer(state, action);
 // };
 
-activeReducer = regularReducer;
-
-export default (state, action) => activeReducer(state, action);
+export default (state, action) => regularReducer(state, action);

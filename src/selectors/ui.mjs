@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect';
-// import {memoizeSimple} from 'utils';
+import {memoizeSimple} from 'utils';
 import {selectUI, selectAuthorizationState} from './common';
 
 
@@ -32,3 +32,8 @@ export const selectMonkey = createSelector(
         return null;
     },
 );
+
+export const selectChatIsActive = memoizeSimple(chatId => createSelector(
+    selectActiveChatId,
+    activeChatId => activeChatId === chatId,
+));

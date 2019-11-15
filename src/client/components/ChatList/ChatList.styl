@@ -7,10 +7,14 @@
     bottom: 0
     box-sizing: border-box
     width: 400px
-    max-width: 100%
     background-color: $white
     border-right: 1px solid $grayBorderColor
     overflow: auto
+    +maxWidth(1000px)
+        width: 40%
+    +maxWidth(700px)
+        width: 100%
+        border-right-width: 0
 
 .chatsWrapper
     padding: 7px 0
@@ -35,6 +39,8 @@
     user-select: none
     -moz-user-select: none
     -webkit-user-select: none
+    &.isActive
+        background-color: $grayBgColor
     &:hover
         background-color: $grayBgColor
 

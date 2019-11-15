@@ -1,6 +1,6 @@
 import {STATIC_URL, DATABASE_PATH} from 'config';
 import {subscribeSelector, select, dispatch} from 'client/store';
-import {getWhen} from 'utils';
+import {getWhen, getColorByChatId} from 'utils';
 import {
     selectChatType,
     selectChatPhotoFile,
@@ -10,6 +10,7 @@ import {
     selectChatOnlineStatus,
     selectChatLastMessage,
     selectChatName,
+    selectChatIsActive,
 } from 'selectors';
 import {createDiv, createText, createSpan, destroyCallbacks, onClick} from 'ui';
 import {loadFile, setActiveChat} from 'actions';
@@ -17,25 +18,6 @@ import css from './ChatList.styl';
 import chatItems from './chatItems';
 import {CHAT_HEIGHT} from './constants';
 
-const chatBgColors = [
-    '#FFCDD2',
-    '#E1BEE7',
-    '#C5CAE9',
-    '#B3E5FC',
-    '#B2DFDB',
-    '#DCEDC8',
-    '#FFF9C4',
-    '#FFE0B2',
-    '#FFCCBC',
-    '#D7CCC8',
-];
-
-const getColorByChatId = (chatId) => {
-    const part = Math.round(chatId / 37);
-    const num = part - (Math.floor(part / 10) * 10);
-
-    return chatBgColors[num];
-};
 
 const setAvatarImage = (node, file, chatId) => {
     if (!file) {
@@ -211,6 +193,14 @@ const Chat = (chatId, chatsContainer) => {
 
         rootNode.style.transform = `translate(0, ${index * CHAT_HEIGHT}px)`;
     };
+
+    subscribeSelector(selectChatIsActive(chatId), (isActive) => {
+        if (isActive) {
+            contentNode.classList.add(css.isActive);
+        } else {
+            contentNode.classList.remove(css.isActive);
+        }
+    });
 
     return chatItems[chatId] = {
         node: rootNode,

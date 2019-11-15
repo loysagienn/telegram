@@ -10,6 +10,7 @@
 
 .content
     position: relative
+    box-sizing: border-box
     height: 100%
     width: 100%
     max-width: 1500px
@@ -17,5 +18,10 @@
     background-color: $chatBgColor
     opacity: 0
     transition: opacity 0.4s ease-out
+    border-right: 1px solid $grayBorderColor
+    border-left: 1px solid $grayBorderColor
     &.visible
         opacity: 1
+    +maxWidth(1500px)
+        border-right-width: 0
+        border-left-width: 0
