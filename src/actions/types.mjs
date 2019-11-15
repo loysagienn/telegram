@@ -12,3 +12,4 @@ export const CHECK_PASSWORD = 'CHECK_PASSWORD';
 export const PASSWORD_INVALID = 'PASSWORD_INVALID';
 export const SET_ACTIVE_CHAT = 'SET_ACTIVE_CHAT';
 export const LOAD_CHATS = 'LOAD_CHATS';
+export const CLIENT_ERROR = 'CLIENT_ERROR';

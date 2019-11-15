@@ -23,13 +23,17 @@ const throttledLoadChats = (lastChatOrder, chatsCount) => {
 
 const destroyChatItems = () => Object.keys(chatItems).forEach(key => chatItems[key].destroy());
 
-const renderList = (chatList, chatsContainer, rootNode, previousItems) => {
-    chatsContainer.style.height = `${chatList.length * CHAT_HEIGHT}px`;
+const renderList = (chatList, chatsContainer, rootNode, previousItems, currentHeight) => {
+    const nextHeight = chatList.length * CHAT_HEIGHT;
+
+    if (nextHeight !== currentHeight) {
+        chatsContainer.style.height = `${nextHeight}px`;
+    }
 
     const top = rootNode.scrollTop;
     const bottom = window.innerHeight + top;
 
-    if (rootNode.scrollHeight > 0 && rootNode.scrollHeight - bottom < 1000) {
+    if (rootNode.scrollHeight > 0 && rootNode.scrollHeight - bottom < 2000) {
         let lastChatOrder = null;
         let index = chatList.length - 1;
 
@@ -65,7 +69,7 @@ const renderList = (chatList, chatsContainer, rootNode, previousItems) => {
 
     Object.keys(previousItems).forEach(key => previousItems[key].hide());
 
-    return nextItems;
+    return [nextItems, nextHeight];
 };
 
 const ChatList = () => {
@@ -75,17 +79,30 @@ const ChatList = () => {
     const [destroy, callbacks] = destroyCallbacks(rootNode);
     let currentChatList = [];
     let previousItems = {};
+    let currentHeight = 0;
 
     callbacks.push(destroyChatItems);
 
     callbacks.push(subscribeSelector(selectSortedChatList, (chatList) => {
-        previousItems = renderList(chatList, chatsContainer, rootNode, previousItems);
+        [previousItems, currentHeight] = renderList(
+            chatList,
+            chatsContainer,
+            rootNode,
+            previousItems,
+            currentHeight,
+        );
 
         currentChatList = chatList;
     }));
 
     callbacks.push(onScroll(rootNode, throttle(() => {
-        previousItems = renderList(currentChatList, chatsContainer, rootNode, previousItems);
+        [previousItems, currentHeight] = renderList(
+            currentChatList,
+            chatsContainer,
+            rootNode,
+            previousItems,
+            currentHeight,
+        );
     }, 100)));
 
     return {

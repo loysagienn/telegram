@@ -27,7 +27,7 @@ class Ws extends EventEmitter {
         this.createConnection();
         this.startPing();
 
-        onError(window, error => this.send({type: 'CLIENT_ERROR', error}));
+        onError(window, error => this.send({type: 'CLIENT_ERROR', message: error.message}));
     }
 
     startPing() {

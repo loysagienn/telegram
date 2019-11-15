@@ -36,6 +36,11 @@ export const onScroll = (element, callback) => {
 
     return () => element.removeEventListener('scroll', callback);
 };
+export const onTouchMove = (element, callback) => {
+    element.addEventListener('touchmove', callback, {passive: true});
+
+    return () => element.removeEventListener('scroll', callback);
+};
 
 // class Callbacks extends Array {
 //     constructor(...args) {

@@ -13,7 +13,7 @@ class Connection extends EventEmitter {
         this.terminateTimeout = null;
 
         wsConnection.on('message', message => this.onMessage(message));
-        wsConnection.send('pong');
+        // wsConnection.send('pong');
 
         this.terminateOnInactive();
     }

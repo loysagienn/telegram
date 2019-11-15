@@ -2,6 +2,7 @@ import {subscribeSelector} from 'client/store';
 import {selectActiveChatId} from 'selectors';
 import {createDiv, destroyCallbacks} from 'ui';
 import ChatList from '../ChatList';
+import ChatMessages from '../ChatMessages';
 import css from './MainLayout.styl';
 
 const renderChatList = (callbacks, contentNode) => {
@@ -15,7 +16,7 @@ const renderChatList = (callbacks, contentNode) => {
 };
 
 const renderMessages = (callbacks, contentNode) => {
-    const currentChat = null;
+    let currentChat = null;
 
     callbacks.push(subscribeSelector(selectActiveChatId, (chatId) => {
         if (currentChat) {
@@ -23,7 +24,7 @@ const renderMessages = (callbacks, contentNode) => {
         }
 
         if (chatId) {
-            // currentChat = ChatMessages(chatId, contentNode);
+            currentChat = ChatMessages(chatId, contentNode);
         }
     }));
 };
