@@ -1,6 +1,8 @@
-import {UPDATE} from 'actions';
+import {UPDATE, UPDATE_FILE} from 'actions';
 
-export default (state = {}, {type, update}) => {
+export default (state = {}, action) => {
+    const {type, update} = action;
+
     if (type === UPDATE) {
         if (update._ === 'updateUser') {
             const {user: {profilePhoto}} = update;
@@ -31,6 +33,12 @@ export default (state = {}, {type, update}) => {
 
             return Object.assign({}, state, {[file.id]: file});
         }
+    }
+
+    if (type === UPDATE_FILE) {
+        const {file} = action;
+
+        return Object.assign({}, state, {[file.id]: file});
     }
 
     return state;

@@ -10,20 +10,44 @@
 
     &.mine
         justify-content: flex-end
-        .content
+        .message
             background-color: #F1FEE1
 
     &.foreign
         justify-content: flex-start
-        .content
+        .message
             background-color: $white
 
-.content
+.message
     box-sizing: border-box
-    max-width: 75%
-    padding: 8px
     border-radius: 8px
     box-shadow: 0 1px 1px 1px rgba(0,0,0,0.05)
     word-wrap: break-word
     font-size: 14px
 
+.text
+    padding: 8px
+    max-width: 75%
+
+.photo
+    width: 60%
+    +maxWidth(1000px)
+        width: 70%
+    +maxWidth(850px)
+        width: 80%
+    +maxWidth(700px)
+        width: 60%
+    +maxWidth(650px)
+        width: 70%
+    +maxWidth(500px)
+        width: 80%
+    +maxWidth(400px)
+        width: 90%
+    .photoImg
+        display: block
+        width: 100%
+        border-radius: 8px 8px 8px 8px
+        &.withText
+            border-radius: 8px 8px 0 0
+    .photoText
+        padding: 8px
