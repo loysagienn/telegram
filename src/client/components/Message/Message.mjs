@@ -1,4 +1,4 @@
-import {createDiv, createText, createBr, destroyCallbacks, createImg} from 'ui';
+import {createDiv, createText, createBr, destroyCallbacks, createImg, createLink} from 'ui';
 import {STATIC_URL, DATABASE_PATH} from 'config';
 import {getColorByChatId} from 'utils';
 import {select, subscribeSelector, dispatch} from 'client/store';
@@ -35,6 +35,42 @@ const setAvatarImage = (node, file, userId) => {
         const relativePath = path.replace(DATABASE_PATH, '');
 
         node.style.backgroundImage = `url('${STATIC_URL}${relativePath}')`;
+    }
+};
+
+const getTgs = path => `<tgs-player
+    class="${css.stickerImage}"
+    autoplay
+    loop
+    mode="normal"
+    src="${STATIC_URL}${path}"
+>
+</tgs-player>`;
+
+const getImg = path => `<img class="${css.stickerImage}" src="${STATIC_URL}${path}"></img>`;
+
+const setStickerImage = (node, {emoji}, file) => {
+    if (!file) {
+        return;
+    }
+
+    const {path, isDownloadingActive, isDownloadingCompleted} = file.local;
+
+    if (!path) {
+        if (!isDownloadingActive && !isDownloadingCompleted) {
+            dispatch(loadFile(file.id));
+        }
+    }
+
+    if (path && isDownloadingCompleted) {
+        const relativePath = path.replace(DATABASE_PATH, '');
+        if (relativePath.indexOf('.tgs') !== -1) {
+            node.innerHTML = getTgs(relativePath);
+        } else {
+            node.innerHTML = getImg(relativePath);
+        }
+    } else if (emoji) {
+        node.innerHTML = `<div class="${css.stickerEmoji}">${emoji}</div>`;
     }
 };
 
@@ -106,6 +142,37 @@ const renderImg = ({minithumbnail, sizes}, callbacks, messageNode) => {
     return img;
 };
 
+const renderPhotoMessage = ({content}, callbacks) => {
+    const node = createDiv(css.message);
+    node.classList.add(css.photo);
+
+    const img = renderImg(content.photo, callbacks, node);
+
+    node.appendChild(img);
+
+    if (content.caption && content.caption.text) {
+        img.classList.add(css.withText);
+
+        node.appendChild(renderText(createDiv(css.photoText), content.caption.text));
+    }
+
+    return {node};
+};
+
+const renderAnimation = ({minithumbnail, thumbnail}, callbacks, messageNode) => {
+    const img = createImg(css.photoImg);
+
+    const {photo} = thumbnail;
+
+    if (!select(selectFile(photo.id))) {
+        dispatch(updateFile(photo));
+    }
+
+    callbacks.push(subscribeSelector(selectFile(photo.id), file => setImgSrc(img, file, minithumbnail, messageNode)));
+
+    return img;
+};
+
 const renderText = (node, text) => {
     const parts = text.split('\n');
 
@@ -137,26 +204,39 @@ const renderName = (userId, callbacks) => {
     return {node};
 };
 
-const renderTextMessage = ({text}, {senderUserId}, callbacks, needName) => {
-    const node = createDiv(css.message);
-    node.classList.add(css.text);
+const renderTextMessage = ({text}, webPage, {senderUserId}, callbacks, needName) => {
+    const textContent = createDiv(css.text);
+    const node = createDiv(css.message, textContent);
+    node.classList.add(css.textMessage);
 
     if (needName) {
         const name = renderName(senderUserId, callbacks);
 
-        node.appendChild(name.node);
+        textContent.appendChild(name.node);
     }
 
-    renderText(node, text);
+    renderText(textContent, text);
+
+    if (webPage && webPage.photo) {
+        const img = renderImg(webPage.photo, callbacks, node);
+
+        const link = createLink(css.webPageLink);
+        link.target = '_blank';
+        link.href = webPage.url;
+
+        link.appendChild(img);
+
+        node.appendChild(link);
+    }
 
     return {node};
 };
 
-const renderPhotoMessage = ({content}, callbacks) => {
+const renderAnimationMessage = ({content}, callbacks) => {
     const node = createDiv(css.message);
     node.classList.add(css.photo);
 
-    const img = renderImg(content.photo, callbacks, node);
+    const img = renderAnimation(content.animation, callbacks, node);
 
     node.appendChild(img);
 
@@ -166,8 +246,44 @@ const renderPhotoMessage = ({content}, callbacks) => {
         node.appendChild(renderText(createDiv(css.photoText), content.caption.text));
     }
 
+    return {node};
+};
 
-    // console.log(content);
+const renderStickerMessage = (content, callbacks) => {
+    const placeholder = createDiv(css.stickerPlaceholder);
+    const stickerContent = createDiv(css.stickerContent);
+    const node = createDiv(css.sticker, placeholder, stickerContent);
+
+    const {sticker} = content;
+
+    if (!select(selectFile(sticker.sticker.id))) {
+        dispatch(updateFile(sticker.sticker));
+    }
+
+    callbacks.push(subscribeSelector(
+        selectFile(sticker.sticker.id),
+        file => setStickerImage(stickerContent, sticker, file),
+    ));
+
+    return {node};
+};
+
+const renderJoinByLinkMessage = (message, callbacks) => {
+    const text = createText('joined by invite link');
+    const node = createDiv(css.message, text);
+    node.classList.add(css.text);
+
+    const {senderUserId} = message;
+
+    callbacks.push(subscribeSelector(selectUser(senderUserId), (user) => {
+        if (!user) {
+            dispatch(getUser(senderUserId));
+
+            return;
+        }
+
+        text.textContent = `${user.firstName} joined by invite link`;
+    }));
 
     return {node};
 };
@@ -176,11 +292,23 @@ const renderMessage = (message, callbacks, needName) => {
     const {content} = message;
 
     if (content._ === 'messageText') {
-        return renderTextMessage(content.text, message, callbacks, needName);
+        return renderTextMessage(content.text, content.webPage, message, callbacks, needName);
     }
 
     if (content._ === 'messagePhoto') {
         return renderPhotoMessage(message, callbacks);
+    }
+
+    if (content._ === 'messageSticker') {
+        return renderStickerMessage(content, callbacks);
+    }
+
+    if (content._ === 'messageAnimation') {
+        return renderAnimationMessage(message, callbacks);
+    }
+
+    if (content._ === 'messageChatJoinByLink') {
+        return renderJoinByLinkMessage(message, callbacks);
     }
 
     const node = createDiv(css.message, createText(content._));

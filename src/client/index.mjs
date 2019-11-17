@@ -64,6 +64,14 @@ let currentHistoryState = window.history.state;
 if (!currentHistoryState) {
     currentHistoryState = rootState;
     window.history.replaceState(currentHistoryState, '', '/');
+} else {
+    if (currentHistoryState.root) {
+        dispatch(setActiveChat(null));
+    }
+
+    if (currentHistoryState.type === SET_ACTIVE_CHAT) {
+        dispatch(currentHistoryState);
+    }
 }
 
 subscribeSelector(selectLastAction, (action) => {

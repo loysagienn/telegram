@@ -45,7 +45,7 @@ const setViewMessages = (chatId, messages, options) => {
     }
 };
 
-const loadMessages = (chatId, messages, {fromMessagesIds}) => {
+const loadMessages = (chatId, messages, options) => {
     let fromMessageId = 0;
     const offset = 0;
 
@@ -53,11 +53,11 @@ const loadMessages = (chatId, messages, {fromMessagesIds}) => {
         fromMessageId = messages[messages.length - 1].id;
     }
 
-    if (fromMessagesIds[chatId] && fromMessagesIds[chatId] === fromMessageId) {
+    if (options.lastFromMessageId && options.lastFromMessageId <= fromMessageId) {
         return;
     }
 
-    fromMessagesIds[chatId] = fromMessageId;
+    options.lastFromMessageId = fromMessageId;
 
     dispatch(getChatMessages(chatId, fromMessageId, offset));
 };
@@ -139,7 +139,7 @@ const MessagesList = (chatId, rootNode) => {
     const node = createDiv(css.root, listWrapper);
     const [destroy] = destroyCallbacks(node, callbacks);
     const activeMessages = [];
-    const options = {fromMessagesIds: {}};
+    const options = {lastFromMessageId: null};
     let currentMessages = [];
 
     rootNode.appendChild(node);

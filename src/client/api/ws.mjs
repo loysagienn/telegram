@@ -65,17 +65,13 @@ class Ws extends EventEmitter {
             return;
         }
 
-        // console.log('message', message);
-
         this.emit('message', message);
     }
 
     createConnection() {
-        console.log('start ws connection');
         const [ws, isOpen] = createWs();
 
         const onOpen = () => {
-            console.log('ws open');
             this.activeWs = ws;
             const {queue} = this;
             this.queue = [];
@@ -108,7 +104,7 @@ class Ws extends EventEmitter {
         if (this.errorsCount < 3) {
             this.createConnection();
         } else {
-            setTimeout(() => this.createConnection(), Math.min((this.errorsCount - 2) * 500, 20000));
+            setTimeout(() => this.createConnection(), Math.min((this.errorsCount - 2) * 500, 10000));
         }
     }
 }

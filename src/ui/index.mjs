@@ -16,6 +16,7 @@ export const createSpan = createElement('span');
 export const createInput = createElement('input');
 export const createBr = createElement('br');
 export const createImg = createElement('img');
+export const createLink = createElement('a');
 
 export const createText = (text = '') => document.createTextNode(text);
 

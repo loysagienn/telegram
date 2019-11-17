@@ -32,15 +32,6 @@ const setLogoImage = logoNode => (monkey) => {
     } else {
         logoNode.innerHTML = logoSvg;
     }
-    // if (authorizationState === 'authorizationStateWaitRegistration') {
-    //     logoNode.innerHTML = getMonkey('TwoFactorSetupMonkeyIdle');
-    // } else if (authorizationState === 'authorizationStateWaitCode') {
-    //     logoNode.innerHTML = getMonkey('TwoFactorSetupMonkeyIdle');
-    // } else if (authorizationState === 'authorizationStateWaitPhoneNumber') {
-    //     logoNode.innerHTML = logoSvg;
-    // } else {
-    //     logoNode.innerHTML = logoSvg;
-    // }
 };
 
 const renderHeader = () => {

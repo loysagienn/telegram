@@ -10,16 +10,13 @@ const composeEnhancers = compose;
 
 const getInitialState = () => {
     const localstorageState = getStateFromLocalstorage();
-    const {app, ui, lastUpdateIndex, instanceHash} = localstorageState;
-    const activeChat = (ui.activeChat && selectChat(ui.activeChat)(localstorageState)) ? ui.activeChat : null;
+    const {app, lastUpdateIndex, instanceHash} = localstorageState;
 
     return {
         savedApp: app,
         lastUpdateIndex,
         instanceHash,
-        ui: {
-            activeChat,
-        },
+        ui: {},
     };
 };
 
@@ -88,8 +85,6 @@ export const subscribeSelector = (selector, callback, skipIfFalsy) => {
 };
 
 window.addEventListener('unload', () => {
-    console.log('set state to local storage');
-
     localStorage.setItem(LOCALSTORAGE_STATE_KEY, JSON.stringify(getState()));
 });
 

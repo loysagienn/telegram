@@ -198,15 +198,15 @@ const getChatMessageStatus = (content) => {
     }
 
     if (content._ === 'messageSticker') {
+        if (content.sticker.emoji) {
+            return `${content.sticker.emoji}sticker`;
+        }
+
         return 'sticker';
     }
 
     if (content._ === 'messageChatJoinByLink') {
         return 'joined group via invite link';
-    }
-
-    if (content._ === 'messageCall') {
-        // console.log(content);
     }
 
     return content._;
@@ -266,6 +266,8 @@ export const selectChatHeaderStatus = memoizeSimple(chatId => createSelector(
                 return {gray: `${supergroup.memberCount} members`};
             }
         }
+
+        console.log(chat.type);
 
         return {};
     },

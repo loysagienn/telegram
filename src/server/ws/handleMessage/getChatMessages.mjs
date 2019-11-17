@@ -46,6 +46,7 @@ const getLoader = (store, connection, chatId) => {
 
         if (count > 10) {
             loading = false;
+            currentFromMessageId = 0;
 
             return;
         }

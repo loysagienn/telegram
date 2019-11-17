@@ -144,7 +144,6 @@ const Chat = (chatId, chatsContainer) => {
         return chatItems[chatId];
     }
 
-    // console.log(select(selectChat(chatId)));
     const callbacks = [];
     const avatarNode = renderAvatar(chatId, callbacks);
     const nameNode = renderName(chatId, callbacks);
