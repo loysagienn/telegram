@@ -10,13 +10,14 @@
     background-color: $white
     border-right: 1px solid $grayBorderColor
     overflow: auto
+    opacity: 1
     +maxWidth(1000px)
         width: 40%
     +maxWidth(700px)
         width: 100%
         border-right-width: 0
         &.hasActiveChat
-            display: none
+            opacity: 0
 
 .chatsWrapper
     padding: 7px 0
