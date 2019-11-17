@@ -93,11 +93,14 @@ const handlers = {
     GET_CHAT_MESSAGES: getChatMessages,
     GET_UNREAD_MESSAGES: getUnreadMessages,
     VIEW_MESSAGES: async (store, message) => {
-        console.log(message);
-
         const {chatId, messageIds} = message;
 
         return store.airgram.api.viewMessages({chatId, messageIds});
+    },
+    GET_USER: async (store, message) => {
+        const {userId} = message;
+
+        return store.airgram.api.getUser({userId});
     },
 };
 

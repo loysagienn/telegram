@@ -20,3 +20,4 @@ export const ADD_UNREAD_MESSAGES = 'ADD_UNREAD_MESSAGES';
 export const SET_CURRENT_USER = 'SET_CURRENT_USER';
 export const VIEW_MESSAGES = 'VIEW_MESSAGES';
 export const UPDATE_FILE = 'UPDATE_FILE';
+export const GET_USER = 'GET_USER';

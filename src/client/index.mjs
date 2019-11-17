@@ -59,8 +59,12 @@ const initTgsPlayer = () => {
 initTgsPlayer();
 
 const rootState = {root: true};
-let currentHistoryState = rootState;
-window.history.replaceState(currentHistoryState, '', '/');
+let currentHistoryState = window.history.state;
+
+if (!currentHistoryState) {
+    currentHistoryState = rootState;
+    window.history.replaceState(currentHistoryState, '', '/');
+}
 
 subscribeSelector(selectLastAction, (action) => {
     if (action !== currentHistoryState && action.type === SET_ACTIVE_CHAT && action.chatId) {

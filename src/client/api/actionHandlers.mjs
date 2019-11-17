@@ -11,6 +11,7 @@ import {
     GET_CHAT_MESSAGES,
     GET_UNREAD_MESSAGES,
     VIEW_MESSAGES,
+    GET_USER,
 
     setActiveChat,
 } from 'actions';
@@ -31,6 +32,7 @@ export default {
     [GET_CHAT_MESSAGES]: getLastAction,
     [GET_UNREAD_MESSAGES]: getLastAction,
     [VIEW_MESSAGES]: getLastAction,
+    [GET_USER]: getLastAction,
     [INIT_STATE]: (state) => {
         const chatId = selectActiveChatId(state);
 

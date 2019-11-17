@@ -5,41 +5,12 @@ import {throttle} from 'utils';
 import {
     selectChatMessages,
     selectCurrentUserId,
-    selectChatReadStatus,
+    selectChat,
 } from 'selectors';
-import {getChatMessages, getUnreadMessages, viewMessages} from 'actions';
+import {getChatMessages, viewMessages} from 'actions';
 import Message from '../Message';
 import css from './MessagesList.styl';
 
-const fromMessagesIds = {};
-// const fromUnreadMessagesIds = {};
-
-// const setDefaultScroll = (chatId, activeMessages, node, options) => {
-//     const chatReadStatus = select(selectChatReadStatus(chatId));
-
-//     if (chatReadStatus && chatReadStatus.unreadCount > 0) {
-//         let index = 0;
-
-//         while (
-//             index < activeMessages.length &&
-//             activeMessages[index].message.id !== chatReadStatus.lastReadInboxMessageId
-//         ) {
-//             index++;
-//         }
-
-//         if (index >= activeMessages.length) {
-//             return;
-//         }
-
-//         const item = activeMessages[index];
-
-//         node.scrollTop = (item.node.offsetTop - node.offsetHeight) + item.node.offsetHeight + 5;
-
-//         options.defaultScrollSetted = true;
-//     } else {
-//         options.defaultScrollSetted = true;
-//     }
-// };
 
 const setViewMessages = (chatId, messages, options) => {
     if (!messages.length) {
@@ -74,7 +45,7 @@ const setViewMessages = (chatId, messages, options) => {
     }
 };
 
-const loadMessages = (chatId, messages) => {
+const loadMessages = (chatId, messages, {fromMessagesIds}) => {
     let fromMessageId = 0;
     const offset = 0;
 
@@ -92,16 +63,19 @@ const loadMessages = (chatId, messages) => {
 };
 
 
-const onListScroll = throttle((node, chatId, messages) => {
+const onListScroll = throttle((node, chatId, messages, options) => {
     if (node.scrollTop < 1000) {
-        loadMessages(chatId, messages);
+        loadMessages(chatId, messages, options);
     }
 }, 100);
 
 const renderList = (chatId, container, messages, activeMessages, node, options) => {
-    if (messages.length === 0) {
-        loadMessages(chatId, messages);
+    if (messages.length < 10) {
+        loadMessages(chatId, messages, options);
     }
+
+    const chat = select(selectChat(chatId));
+    const needRenderAvatar = chat.type._ !== 'chatTypePrivate' && !chat.type.isChannel;
 
     const bottomSpace = (node.scrollHeight - node.offsetHeight - node.scrollTop);
 
@@ -112,7 +86,7 @@ const renderList = (chatId, container, messages, activeMessages, node, options) 
         const message = messages[index];
 
         if (activeMessages.length <= index) {
-            activeMessages.push(Message(container, message));
+            activeMessages.push(Message(container, message, needRenderAvatar));
             index++;
 
             continue;
@@ -135,8 +109,9 @@ const renderList = (chatId, container, messages, activeMessages, node, options) 
         }
 
         addMessagesBefore++;
+        options.setViewMessages = false;
 
-        activeMessages.splice(index, 0, Message(container, message, item));
+        activeMessages.splice(index, 0, Message(container, message, needRenderAvatar, item));
 
         index++;
     }
@@ -155,7 +130,7 @@ const renderList = (chatId, container, messages, activeMessages, node, options) 
         setViewMessages(chatId, messages, options);
     }
 
-    onListScroll(node, chatId, messages);
+    onListScroll(node, chatId, messages, options);
 };
 
 const MessagesList = (chatId, rootNode) => {
@@ -164,7 +139,7 @@ const MessagesList = (chatId, rootNode) => {
     const node = createDiv(css.root, listWrapper);
     const [destroy] = destroyCallbacks(node, callbacks);
     const activeMessages = [];
-    const options = {};
+    const options = {fromMessagesIds: {}};
     let currentMessages = [];
 
     rootNode.appendChild(node);
@@ -177,7 +152,7 @@ const MessagesList = (chatId, rootNode) => {
         },
     ));
 
-    callbacks.push(onScroll(node, () => onListScroll(node, chatId, currentMessages)));
+    callbacks.push(onScroll(node, () => onListScroll(node, chatId, currentMessages, options)));
 
     return {
         node,
