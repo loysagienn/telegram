@@ -8,6 +8,8 @@
     right: 0
     +maxWidth(1000px)
         left: 40%
+    +maxWidth(700px)
+        left: 0
 
 .header
     position: absolute
@@ -18,6 +20,33 @@
     height: 67px
     border-bottom: 1px solid $grayBorderColor
     background-color: white
+
+.backBtn
+    position: absolute
+    box-sizing: border-box
+    top: 8px
+    bottom: 8px
+    left: 5px
+    width: 50px
+    padding: 10px
+    display: none
+    cursor: pointer
+    // background-color: yellow
+    +maxWidth(700px)
+        display: block
+
+    svg
+        width: 30px
+        height: 30px
+
+.chatInfo
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    +maxWidth(700px)
+        left: 40px
 
 .avatar
     position: absolute

@@ -31,3 +31,5 @@ export const selectUserPhotoFile = memoizeSimple(
         return files[fileId] || null;
     }),
 );
+
+export const selectCurrentUserId = createSelector(selectApp, ({currentUserId}) => currentUserId);

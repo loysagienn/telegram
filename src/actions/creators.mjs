@@ -14,6 +14,11 @@ import {
     SET_ACTIVE_CHAT,
     LOAD_CHATS,
     CLIENT_ERROR,
+    GET_CHAT_MESSAGES,
+    GET_UNREAD_MESSAGES,
+    ADD_CHAT_MESSAGES,
+    ADD_UNREAD_MESSAGES,
+    SET_CURRENT_USER,
 } from './types';
 
 
@@ -32,3 +37,10 @@ export const passwordInvalid = () => ({type: PASSWORD_INVALID});
 export const setActiveChat = chatId => ({type: SET_ACTIVE_CHAT, chatId});
 export const loadChats = lastChatOrder => ({type: LOAD_CHATS, lastChatOrder});
 export const clientError = params => Object.assign({}, params, {type: CLIENT_ERROR});
+export const getChatMessages = (chatId, fromMessageId, offset = 0) => (
+    {type: GET_CHAT_MESSAGES, chatId, fromMessageId, offset}
+);
+export const getUnreadMessages = (chatId, fromMessageId) => ({type: GET_UNREAD_MESSAGES, chatId, fromMessageId});
+export const addChatMessages = (chatId, messages) => ({type: ADD_CHAT_MESSAGES, chatId, messages});
+export const addUnreadMessages = (chatId, messages) => ({type: ADD_UNREAD_MESSAGES, chatId, messages});
+export const setCurrentUser = user => ({type: SET_CURRENT_USER, user});

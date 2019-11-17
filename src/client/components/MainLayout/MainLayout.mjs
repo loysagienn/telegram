@@ -17,30 +17,27 @@ const renderChatList = (callbacks, contentNode) => {
 
 const renderMessages = (callbacks, contentNode) => {
     let currentChat = null;
-    const chatsItems = {};
 
     callbacks.push(subscribeSelector(selectActiveChatId, (chatId) => {
         if (currentChat) {
-            currentChat.hide();
+            currentChat.destroy();
         }
 
         if (chatId) {
-            currentChat = ChatMessages(chatId, contentNode, chatsItems);
+            currentChat = ChatMessages(chatId, contentNode);
         }
     }));
-
-    callbacks.push(() => Object.keys(chatsItems).forEach(key => chatsItems[key].destroy()));
 };
 
 const MainLayout = (parentNode) => {
     const contentNode = createDiv(css.content);
     const rootNode = createDiv(css.root, contentNode);
     const [destroy, callbacks] = destroyCallbacks(rootNode);
-    renderChatList(callbacks, contentNode);
-    renderMessages(callbacks, contentNode);
-
 
     parentNode.appendChild(rootNode);
+
+    renderChatList(callbacks, contentNode);
+    renderMessages(callbacks, contentNode);
 
     requestAnimationFrame(() => contentNode.classList.add(css.visible));
 

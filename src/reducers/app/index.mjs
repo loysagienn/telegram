@@ -19,6 +19,7 @@ import usersFullInfo from './usersFullInfo';
 import passwordHint from './passwordHint';
 import notificationSettings from './notificationSettings';
 import onlineMemberCount from './onlineMemberCount';
+import currentUserId from './currentUserId';
 
 export default combineReducers({
     authorizationState,
@@ -43,4 +44,5 @@ export default combineReducers({
     passwordHint,
     notificationSettings,
     onlineMemberCount,
+    currentUserId,
 });

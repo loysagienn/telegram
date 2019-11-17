@@ -1,5 +1,5 @@
 
-import {initState, useLocalstorageState} from 'actions';
+import {initState, useLocalstorageState, setCurrentUser} from 'actions';
 import {getUserStore} from './userStore';
 import handleMessage from './handleMessage';
 
@@ -62,6 +62,14 @@ const initConnection = async (connection) => {
 
         connection.once('terminate', () => {
             store.off('updateAction', updateActionListener);
+        });
+
+        store.airgram.api.getMe().then(({response}) => {
+            if (response._ === 'user') {
+                connection.send(setCurrentUser(response));
+            } else {
+                console.log('get current user error', response);
+            }
         });
     };
 

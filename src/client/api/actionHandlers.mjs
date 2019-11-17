@@ -8,6 +8,9 @@ import {
     CLIENT_ERROR,
     INIT_STATE,
     SET_ACTIVE_CHAT,
+    GET_CHAT_MESSAGES,
+    GET_UNREAD_MESSAGES,
+
     setActiveChat,
 } from 'actions';
 import {selectLastAction, selectActiveChatId} from 'selectors';
@@ -24,6 +27,8 @@ export default {
     [LOAD_CHATS]: getLastAction,
     [CLIENT_ERROR]: getLastAction,
     [SET_ACTIVE_CHAT]: getLastAction,
+    [GET_CHAT_MESSAGES]: getLastAction,
+    [GET_UNREAD_MESSAGES]: getLastAction,
     [INIT_STATE]: (state) => {
         const chatId = selectActiveChatId(state);
 

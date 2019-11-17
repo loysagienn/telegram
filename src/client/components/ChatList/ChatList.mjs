@@ -1,5 +1,5 @@
 import {subscribeSelector, dispatch, select} from 'client/store';
-import {selectSortedChatList, selectChatOrder} from 'selectors';
+import {selectSortedChatList, selectChatOrder, selectActiveChatId} from 'selectors';
 import {loadChats} from 'actions';
 import {createDiv, destroyCallbacks, onScroll} from 'ui';
 import {throttle} from 'utils';
@@ -95,6 +95,14 @@ const ChatList = () => {
         );
 
         currentChatList = chatList;
+    }));
+
+    callbacks.push(subscribeSelector(selectActiveChatId, (activeChatId) => {
+        if (activeChatId) {
+            rootNode.classList.add(css.hasActiveChat);
+        } else {
+            rootNode.classList.remove(css.hasActiveChat);
+        }
     }));
 
     callbacks.push(onScroll(rootNode, throttle(() => {

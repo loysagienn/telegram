@@ -266,11 +266,6 @@ export const selectChatHeaderStatus = memoizeSimple(chatId => createSelector(
                 return {gray: `${supergroup.memberCount} members`};
             }
         }
-        console.log(supergroup);
-
-
-        // selectChatOnlineMemberCount
-        console.log(chat);
 
         return {};
     },
