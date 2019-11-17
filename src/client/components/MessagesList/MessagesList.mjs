@@ -120,8 +120,12 @@ const renderList = (chatId, container, messages, activeMessages, node, options) 
         activeMessages.pop().destroy();
     }
 
-    if (!(bottomSpace > 5 || addMessagesBefore > 1)) {
+    if (addMessagesBefore === 0) {
         const scrollTop = Math.max(node.scrollHeight - node.offsetHeight - bottomSpace, 5);
+
+        node.scrollTop = scrollTop;
+    } else if (bottomSpace < 5 && addMessagesBefore === 1) {
+        const scrollTop = Math.max(node.scrollHeight - node.offsetHeight, 5);
 
         node.scrollTop = scrollTop;
     }

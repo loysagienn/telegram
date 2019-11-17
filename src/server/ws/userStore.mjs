@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import {Airgram} from 'airgram';
 import {generateRandomString} from 'utils';
 
-import {update as updateAction} from 'actions';
+import {update as updateAction, setCurrentUser} from 'actions';
 import createReduxStore from './createReduxStore';
 
 const activeStates = {};
@@ -119,7 +119,20 @@ class UserStore extends EventEmitter {
                 this.authorizationState = state;
 
                 if (!isServiceAction) {
-                    this.emit('updateAuthorizationState', state);
+                    if (state === 'authorizationStateReady') {
+                        this.airgram.api.getMe().then(({response}) => {
+                            if (response._ === 'user') {
+                                this.currentUser = response;
+                                this.reduxStore.dispatch(setCurrentUser(response));
+                                this.emit('updateAuthorizationState', state);
+                            } else {
+                                console.log('get current user error', response);
+                                this.emit('updateAuthorizationState', state);
+                            }
+                        });
+                    } else {
+                        this.emit('updateAuthorizationState', state);
+                    }
                 }
             }
 
