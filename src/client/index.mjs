@@ -1,7 +1,9 @@
-import {batchActions} from 'actions';
-import {dispatch} from 'client/store';
+import {batchActions, setActiveChat, SET_ACTIVE_CHAT} from 'actions';
+import {dispatch, subscribeSelector} from 'client/store';
+import {selectLastAction} from 'selectors';
 import {socket} from './api';
 import {renderApp} from './components';
+
 
 let actionsQueue = [];
 let collectActions = false;
@@ -55,3 +57,29 @@ const initTgsPlayer = () => {
 };
 
 initTgsPlayer();
+
+
+let currentHistoryState = {root: true};
+window.history.replaceState(currentHistoryState, '', '/');
+
+subscribeSelector(selectLastAction, (action) => {
+    if (action !== currentHistoryState && action.type === SET_ACTIVE_CHAT && action.chatId) {
+        currentHistoryState = action;
+
+        window.history.pushState(action, '', '/');
+    }
+});
+
+window.addEventListener('popstate', ({state}) => {
+    if (state) {
+        if (state.root) {
+            dispatch(setActiveChat(null));
+        }
+
+        if (state.type === SET_ACTIVE_CHAT) {
+            currentHistoryState = setActiveChat(state.chatId);
+
+            dispatch(currentHistoryState);
+        }
+    }
+});
