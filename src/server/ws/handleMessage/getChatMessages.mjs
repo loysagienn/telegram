@@ -19,7 +19,7 @@ const getLoader = (store, connection, chatId) => {
         const {response} = await store.airgram.api.getChatHistory({
             chatId,
             fromMessageId,
-            offset: currentFromMessageId === 0 ? -1 : 0,
+            offset: fromMessageId === 0 ? -1 : 0,
             limit: 20,
             onlyLocal: false,
         });
@@ -33,7 +33,7 @@ const getLoader = (store, connection, chatId) => {
         }
 
         if (messages.length === 0) {
-            loadWorker(lastMessageId);
+            loadWorker(fromMessageId);
 
             return;
         }
