@@ -19,6 +19,7 @@ import {
     ADD_CHAT_MESSAGES,
     ADD_UNREAD_MESSAGES,
     SET_CURRENT_USER,
+    VIEW_MESSAGES,
 } from './types';
 
 
@@ -44,3 +45,4 @@ export const getUnreadMessages = (chatId, fromMessageId) => ({type: GET_UNREAD_M
 export const addChatMessages = (chatId, messages) => ({type: ADD_CHAT_MESSAGES, chatId, messages});
 export const addUnreadMessages = (chatId, messages) => ({type: ADD_UNREAD_MESSAGES, chatId, messages});
 export const setCurrentUser = user => ({type: SET_CURRENT_USER, user});
+export const viewMessages = (chatId, messageIds) => ({type: VIEW_MESSAGES, chatId, messageIds});

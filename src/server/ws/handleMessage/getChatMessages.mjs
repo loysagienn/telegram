@@ -32,6 +32,10 @@ const getLoader = (store, connection, chatId) => {
             return;
         }
 
+        if (messages.length === 0) {
+            return;
+        }
+
         connection.send(addChatMessages(chatId, messages));
 
         const lastMessageId = messages[messages.length - 1].id;
@@ -41,7 +45,6 @@ const getLoader = (store, connection, chatId) => {
         }
 
         if (count > 10) {
-            count = 0;
             loading = false;
 
             return;
@@ -56,6 +59,7 @@ const getLoader = (store, connection, chatId) => {
         }
 
         currentFromMessageId = fromMessageId;
+        count = 0;
 
         if (!loading) {
             loadWorker(fromMessageId, offset);
