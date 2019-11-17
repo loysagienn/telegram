@@ -33,6 +33,8 @@ const getLoader = (store, connection, chatId) => {
         }
 
         if (messages.length === 0) {
+            loadWorker(lastMessageId);
+
             return;
         }
 

@@ -267,8 +267,6 @@ export const selectChatHeaderStatus = memoizeSimple(chatId => createSelector(
             }
         }
 
-        console.log(chat.type);
-
         return {};
     },
 ));
