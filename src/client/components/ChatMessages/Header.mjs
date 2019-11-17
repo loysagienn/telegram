@@ -1,6 +1,6 @@
 import {createDiv, createText, onClick, destroyCallbacks, createSpan} from 'ui';
 import {STATIC_URL, DATABASE_PATH} from 'config';
-import {setActiveChat, loadFile} from 'actions';
+import {loadFile} from 'actions';
 import {subscribeSelector, select, dispatch} from 'client/store';
 import {getColorByChatId} from 'utils';
 import {
@@ -69,7 +69,7 @@ const renderBackBtn = () => {
 
     backBtn.innerHTML = backBtnSvg;
 
-    onClick(backBtn, () => dispatch(setActiveChat(null)));
+    onClick(backBtn, () => window.history.back());
 
     return backBtn;
 };

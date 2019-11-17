@@ -58,21 +58,27 @@ const initTgsPlayer = () => {
 
 initTgsPlayer();
 
-
-let currentHistoryState = {root: true};
+const rootState = {root: true};
+let currentHistoryState = rootState;
 window.history.replaceState(currentHistoryState, '', '/');
 
 subscribeSelector(selectLastAction, (action) => {
     if (action !== currentHistoryState && action.type === SET_ACTIVE_CHAT && action.chatId) {
-        currentHistoryState = action;
+        if (currentHistoryState.type === SET_ACTIVE_CHAT) {
+            window.history.replaceState(action, '', '/');
+        } else {
+            window.history.pushState(action, '', '/');
+        }
 
-        window.history.pushState(action, '', '/');
+        currentHistoryState = action;
     }
 });
 
 window.addEventListener('popstate', ({state}) => {
     if (state) {
         if (state.root) {
+            currentHistoryState = rootState;
+
             dispatch(setActiveChat(null));
         }
 

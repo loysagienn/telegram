@@ -10,7 +10,9 @@ import css from './Message.styl';
 
 const setImgSrc = (img, file, minithumbnail) => {
     if (!file) {
-        img.src = `data:image/jpeg;base64,${minithumbnail.data}`;
+        if (minithumbnail) {
+            img.src = `data:image/jpeg;base64,${minithumbnail.data}`;
+        }
 
         dispatch(loadFile(file.id));
 
@@ -29,7 +31,7 @@ const setImgSrc = (img, file, minithumbnail) => {
         const relativePath = path.replace(DATABASE_PATH, '');
 
         img.src = `${STATIC_URL}${relativePath}`;
-    } else {
+    } else if (minithumbnail) {
         img.src = `data:image/jpeg;base64,${minithumbnail.data}`;
     }
 };
