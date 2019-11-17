@@ -5,7 +5,8 @@ import initActionHandlers from 'actionHandlers';
 import {getStateFromLocalstorage} from 'client/localstorage';
 import reducer from './reducer';
 
-const {__REDUX_DEVTOOLS_EXTENSION_COMPOSE__: composeEnhancers = compose} = window;
+// const {__REDUX_DEVTOOLS_EXTENSION_COMPOSE__: composeEnhancers = compose} = window;
+const composeEnhancers = compose;
 
 const getInitialState = () => {
     const localstorageState = getStateFromLocalstorage();
