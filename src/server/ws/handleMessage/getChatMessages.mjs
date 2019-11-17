@@ -13,13 +13,13 @@ const getLoader = (store, connection, chatId) => {
     let count = 0;
     let loading = false;
 
-    const loadWorker = async (fromMessageId = currentFromMessageId, offset = 0) => {
+    const loadWorker = async (fromMessageId = currentFromMessageId) => {
         loading = true;
 
         const {response} = await store.airgram.api.getChatHistory({
             chatId,
             fromMessageId,
-            offset,
+            offset: currentFromMessageId === 0 ? -3 : 0,
             limit: 20,
             onlyLocal: false,
         });
