@@ -16,6 +16,13 @@ const initConnection = async (connection) => {
                 offsetOrder: '9223372036854775807',
                 limit: 10,
             });
+            store.airgram.api.getMe().then(({response}) => {
+                if (response._ === 'user') {
+                    connection.send(setCurrentUser(response));
+                } else {
+                    console.log('get current user error', response);
+                }
+            });
         }
     };
     store.on('updateAuthorizationState', handleUpdateAuthorizationState);
@@ -64,13 +71,15 @@ const initConnection = async (connection) => {
             store.off('updateAction', updateActionListener);
         });
 
-        store.airgram.api.getMe().then(({response}) => {
-            if (response._ === 'user') {
-                connection.send(setCurrentUser(response));
-            } else {
-                console.log('get current user error', response);
-            }
-        });
+        if (authorizationState === 'authorizationStateReady') {
+            store.airgram.api.getMe().then(({response}) => {
+                if (response._ === 'user') {
+                    connection.send(setCurrentUser(response));
+                } else {
+                    console.log('get current user error', response);
+                }
+            });
+        }
     };
 
     if (store.authorizationState) {
