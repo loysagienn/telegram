@@ -34,8 +34,8 @@ class UserStore extends EventEmitter {
             databaseDirectory: dbDir,
             // filesDirectory: filesDir,
             useFileDatabase: true,
-            useChatInfoDatabase: true,
-            useMessageDatabase: true,
+            useChatInfoDatabase: false,
+            useMessageDatabase: false,
             useSecretChats: false,
         });
 
