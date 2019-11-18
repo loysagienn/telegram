@@ -68,8 +68,14 @@ const handlers = {
     REGISTER_USER: registerUser,
     CHECK_PASSWORD: checkPassword,
 
-    LOAD_FILE: (store, message) => {
+    LOAD_FILE: async (store, message) => {
         const {fileId} = message;
+
+        if (store.loadedFiles.has(fileId)) {
+            return `load file ${fileId} has been done`;
+        }
+
+        store.loadedFiles.add(fileId);
 
         return store.airgram.api.downloadFile({
             fileId,
