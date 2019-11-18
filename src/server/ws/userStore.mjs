@@ -20,6 +20,7 @@ class UserStore extends EventEmitter {
         this.authorizationState = null;
         this.instanceHash = generateRandomString(15);
         this.updateActions = [];
+        this.currentFromChatId = {};
         this.loadedFiles = new Set();
 
         this.reduxStore = createReduxStore();

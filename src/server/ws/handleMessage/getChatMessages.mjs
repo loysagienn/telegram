@@ -9,11 +9,11 @@ const getLoader = (store, connection, chatId) => {
         return loaders[chatId];
     }
 
-    let currentFromMessageId = 0;
+    store.currentFromChatId[chatId] = 0;
     let count = 0;
     let loading = false;
 
-    const loadWorker = async (fromMessageId = currentFromMessageId) => {
+    const loadWorker = async (fromMessageId = store.currentFromChatId[chatId]) => {
         loading = true;
 
         const {response} = await store.airgram.api.getChatHistory({
@@ -36,7 +36,7 @@ const getLoader = (store, connection, chatId) => {
 
         if (messages.length === 0) {
             loading = false;
-            currentFromMessageId = 0;
+            store.currentFromChatId[chatId] = 0;
 
             return;
         }
@@ -45,13 +45,13 @@ const getLoader = (store, connection, chatId) => {
 
         const lastMessageId = messages[messages.length - 1].id;
 
-        if (currentFromMessageId === 0 || fromMessageId < currentFromMessageId) {
+        if (store.currentFromChatId[chatId] === 0 || fromMessageId < store.currentFromChatId[chatId]) {
             count += messages.length;
         }
 
         if (count > 10) {
             loading = false;
-            currentFromMessageId = 0;
+            store.currentFromChatId[chatId] = 0;
 
             return;
         }
@@ -60,11 +60,11 @@ const getLoader = (store, connection, chatId) => {
     };
 
     const load = (fromMessageId, offset) => {
-        if (currentFromMessageId !== 0 && fromMessageId >= currentFromMessageId) {
+        if (store.currentFromChatId[chatId] !== 0 && fromMessageId >= store.currentFromChatId[chatId]) {
             return;
         }
 
-        currentFromMessageId = fromMessageId;
+        store.currentFromChatId[chatId] = fromMessageId;
         count = 0;
 
         if (!loading) {
