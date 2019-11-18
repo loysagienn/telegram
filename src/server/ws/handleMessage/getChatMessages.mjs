@@ -32,10 +32,11 @@ const getLoader = (store, connection, chatId) => {
             return;
         }
 
-        console.log('get messages', messages);
+        console.log('get messages', messages.length);
 
         if (messages.length === 0) {
-            loadWorker(fromMessageId);
+            loading = false;
+            currentFromMessageId = 0;
 
             return;
         }
