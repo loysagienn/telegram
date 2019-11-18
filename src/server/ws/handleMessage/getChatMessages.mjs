@@ -3,10 +3,10 @@ import {addChatMessages, addUnreadMessages} from 'actions';
 const loaders = {};
 
 const getLoader = (store, connection, chatId) => {
-    if (loaders[chatId]) {
-        loaders[chatId].setData(store, connection);
+    if (store.loaders[chatId]) {
+        store.loaders[chatId].setData(store, connection);
 
-        return loaders[chatId];
+        return store.loaders[chatId];
     }
 
     store.currentFromChatId[chatId] = 0;
